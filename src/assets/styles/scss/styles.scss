@@ -1,0 +1,22 @@
+// Gallery
+.gallery {
+    list-style-type: none;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    li>div {
+        border: solid orange 2px;
+        height: 10rem;
+        width: 8rem;
+        text-align: center;
+        overflow: hidden;
+        margin: 1em 2em;
+
+        img {
+            object-fit: cover;
+            height: 100%;
+            margin: auto 0;
+        }
+    }
+}
