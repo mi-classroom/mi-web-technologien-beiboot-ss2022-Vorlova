@@ -23,6 +23,8 @@
 		handleJSON().then(
 			function(value) {
 				extractImageItems(value);
+				sortImages();
+				images = images;
 			}
 		);
 	}
@@ -45,9 +47,15 @@
 					date: item.metadata.date,
 					medium: item.medium,
 					repository: item.repository,
+					sortingPosition: item.sortingInfo.position,
 				});
-				images = images;
 			}
+		});
+	}
+
+	let sortImages = () => {
+		images.sort((a, b) => {
+			return a.sortingPosition - b.sortingPosition;
 		});
 	}
 </script>
