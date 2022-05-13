@@ -5,18 +5,30 @@
     flex-direction: row;
     flex-wrap: wrap;
 
-    li>div {
-        border: solid orange 2px;
-        height: 10rem;
-        width: 8rem;
-        text-align: center;
-        overflow: hidden;
-        margin: 1em 2em;
+    li {
+        div {
+            border: solid #222 2px;
+            width: 15rem;
+            overflow: hidden;
+            margin: 0 2em;
+            box-sizing: border-box;
 
-        img {
-            object-fit: cover;
-            height: 100%;
-            margin: auto 0;
+            img {
+                object-fit: cover;
+                height: 100%;
+            }
+        }
+
+        #image-frame {
+            text-align: center;
+            height: 20rem;
+        }
+        #image-data {
+            height: 7rem;
+            font-size: medium;
+            padding: 1em;
+            margin-bottom: 1rem;
+            overflow-y: scroll;
         }
     }
 }

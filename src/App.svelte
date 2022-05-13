@@ -13,12 +13,10 @@
 	images.push({
 		src: 'https://cdn.pixabay.com/photo/2014/04/13/20/49/cat-323262_1280.jpg',
 		title: 'Title 1',
-		artist: 'Artist'
 	},
 	{
 		src: 'https://images.pexels.com/photos/6447547/pexels-photo-6447547.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
 		title: 'Title 2',
-		artist: 'Artist'
 	});
 
 	let handleSubmit = () => {
@@ -38,13 +36,15 @@
 	}
 
 	let extractImageItems = (jsonObj) => {
-		jsonObj.items.forEach((item, index) => {
-			if(index < 30) {
-				console.log(index);
+		images = [];
+		jsonObj.items.forEach(item => {
+			if(item.isBestOf == true) {
 				images.push({
 					src: item.images.overall.images[0].sizes.medium.src,
 					title: item.metadata.title,
-					artist: 'Lucas Cranach'
+					date: item.metadata.date,
+					medium: item.medium,
+					repository: item.repository,
 				});
 				images = images;
 			}
@@ -71,12 +71,17 @@
 	<ul class="gallery">
 		{#each images as item}
 			<li>
-				<div>
+				<div id="image-frame">
 					<img
 					class=galleryItem
-					alt="Preview of {item.title} by {item.artist}."
+					alt="Preview of {item.title}"
 					src={item.src}
 					>
+				</div>
+				<div id="image-data">
+					<b>{item.title}</b>, {item.date}<br>
+					{item.medium}<br>
+					<i>{item.repository}</i>
 				</div>
 			</li>
 		{/each}	
