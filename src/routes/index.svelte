@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	// Mapping der Daten:
 	// * Vorschaubild: images/overall/images/item[0]/sizes/medium/src
 	// * Titel: metadata/title
@@ -6,8 +6,8 @@
 	// * Art des Werks: medium (alle Angaben in Klammern bitte weglassen)
 	// * Besitzer: repository
 
-	let files;
-	let images = [];
+	let files: any;
+	let images: any[] = [];
 
 	// debug
 	images.push({
@@ -37,7 +37,9 @@
 		return jsonObj;
 	}
 
-	let extractImageItems = (jsonObj) => {
+	let extractImageItems = (jsonObj: {
+        items: [any],
+    }) => {
 		images = [];
 		jsonObj.items.forEach(item => {
 			if(item.isBestOf == true) {
@@ -97,4 +99,4 @@
 </div>
 
 
-<style lang="scss" src="./assets/styles/scss/styles.scss"></style>
+<style lang="scss" src="../assets/styles/scss/styles.scss"></style>
