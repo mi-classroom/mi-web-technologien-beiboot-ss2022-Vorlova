@@ -49,7 +49,7 @@
 					date: item.metadata.date,
 					medium: item.medium,
 					repository: item.repository,
-					sortingPosition: item.sortingInfo.position,
+					sortingPosition: item.sortingNumber,
 				});
 			}
 		});
