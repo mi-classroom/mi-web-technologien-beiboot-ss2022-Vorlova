@@ -43,11 +43,13 @@
 		images = [];
 		jsonObj.items.forEach(item => {
 			if(item.isBestOf == true) {
+				let medium: string = removeBrackets(item.medium);
+
 				images.push({
 					src: item.images.overall.images[0].sizes.medium.src,
 					title: item.metadata.title,
 					date: item.metadata.date,
-					medium: item.medium,
+					medium,
 					repository: item.repository,
 					sortingPosition: item.sortingNumber,
 				});
@@ -59,6 +61,10 @@
 		images.sort((a, b) => {
 			return a.sortingPosition - b.sortingPosition;
 		});
+	}
+
+	let removeBrackets = (entry: string): string => {
+		return entry.split('(')[0].split('[')[0];
 	}
 </script>
 
