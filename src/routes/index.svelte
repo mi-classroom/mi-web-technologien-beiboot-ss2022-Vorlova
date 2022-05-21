@@ -59,7 +59,7 @@
 
 	let sortImages = () => {
 		images.sort((a, b) => {
-			return a.sortingPosition - b.sortingPosition;
+			return a.sortingPosition.localeCompare(b.sortingPosition);
 		});
 	}
 
