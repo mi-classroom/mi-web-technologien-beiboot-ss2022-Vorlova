@@ -1,4 +1,7 @@
 <script lang="ts">
+	import * as THREE from 'three';
+	import * as SC from 'svelte-cubed';
+
 	// Mapping der Daten:
 	// * Vorschaubild: images/overall/images/item[0]/sizes/medium/src
 	// * Titel: metadata/title
@@ -83,6 +86,14 @@
 </form>
 
 <h1>Gallery:</h1>
+
+<div style="width: 99%; height: 85%; position: absolute;">
+	<SC.Canvas antialias background={new THREE.Color('papayawhip')}>
+		<SC.Mesh geometry={new THREE.BoxGeometry()} />
+		<SC.PerspectiveCamera position={[1, 1, 3]} />
+	</SC.Canvas>
+</div>
+
 <div>
 	<ul class="gallery">
 		{#each images as item}
