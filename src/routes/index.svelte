@@ -5,11 +5,18 @@
 	let files: any;
 	let images: any[] = [];
 
+	// define timeline base
 	let lineMaterial = new THREE.LineBasicMaterial( { color: 0x0000ff } );
 	let lineGeometry = new THREE.BoxGeometry( 100, 0.5, 0.5, 10, 10, 10);
-	
+
+	// define ground plane for orientation
 	let groundMaterial = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
 	let groundGeometry = new THREE.BoxGeometry( 150, 0, 150);
+
+	// define image planes
+	// let texture = new THREE.TextureLoader().load( "textures/water.jpg" );
+	// let imageMaterial = new THREE.MeshNormalMaterial( texture );
+	let imageGeometry = new THREE.BoxGeometry( 30, 50, 0.5);
 
 	// debug
 	images.push({
@@ -89,10 +96,16 @@
 <div class="gallery">
 	<SC.Canvas antialias background={new THREE.Color('papayawhip')}>
 		<SC.Mesh geometry={groundGeometry} material={groundMaterial} position={[0, 0, 0]} />
-
 		<SC.Mesh geometry={lineGeometry} material={lineMaterial}  position={[0, 1, 0]} />
 		<SC.PerspectiveCamera position={[50, 50, 75]} target={[10, 25, 0]}/>
 		<SC.OrbitControls enableZoom={true} enableRotate={true}/>
+		<SC.Mesh
+			geometry={imageGeometry}
+			material={
+				new THREE.LineBasicMaterial( { color: 0x0000ff } )
+			}
+			position={[-40, 30, 20]}
+			rotation={[0, Math.PI / 2, 0]} />
 	</SC.Canvas>
 </div>
 
