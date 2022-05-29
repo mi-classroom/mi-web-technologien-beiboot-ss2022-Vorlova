@@ -17,6 +17,7 @@
 	// let texture = new THREE.TextureLoader().load( "textures/water.jpg" );
 	// let imageMaterial = new THREE.MeshNormalMaterial( texture );
 	let imageGeometry = new THREE.BoxGeometry( 30, 50, 0.5);
+	let imagePosition: [number, number, number] = [-60, 27.5, 15];
 
 	// debug
 	images.push({
@@ -99,13 +100,17 @@
 		<SC.Mesh geometry={lineGeometry} material={lineMaterial}  position={[0, 1, 0]} />
 		<SC.PerspectiveCamera position={[50, 50, 75]} target={[10, 25, 0]}/>
 		<SC.OrbitControls enableZoom={true} enableRotate={true}/>
-		<SC.Mesh
-			geometry={imageGeometry}
-			material={
-				new THREE.LineBasicMaterial( { color: 0x0000ff } )
-			}
-			position={[-40, 30, 20]}
-			rotation={[0, Math.PI / 2, 0]} />
+		{#each images as item}
+			<SC.Mesh
+				geometry={imageGeometry}
+				material={
+					new THREE.LineBasicMaterial( { color: 0x0000ff } )
+				}
+				position={imagePosition}
+				rotation={[0, Math.PI / 2, 0]} />
+				{console.log(imagePosition)}
+				{imagePosition[0]=imagePosition[0]+10}
+		{/each}
 	</SC.Canvas>
 </div>
 
@@ -126,7 +131,7 @@
 					<i>{item.repository}</i>
 				</div>
 			</li>
-		{/each}	
+		{/each}
 	</ul>
 </div> -->
 
