@@ -2,13 +2,6 @@
 	import * as THREE from 'three';
 	import * as SC from 'svelte-cubed';
 
-	// Mapping der Daten:
-	// * Vorschaubild: images/overall/images/item[0]/sizes/medium/src
-	// * Titel: metadata/title
-	// * Datierung: metadata/date
-	// * Art des Werks: medium (alle Angaben in Klammern bitte weglassen)
-	// * Besitzer: repository
-
 	let files: any;
 	let images: any[] = [];
 
@@ -96,7 +89,7 @@
 <div class="gallery">
 	<SC.Canvas antialias background={new THREE.Color('papayawhip')}>
 		<SC.Mesh geometry={groundGeometry} material={groundMaterial} position={[0, 0, 0]} />
-		
+
 		<SC.Mesh geometry={lineGeometry} material={lineMaterial}  position={[0, 1, 0]} />
 		<SC.PerspectiveCamera position={[50, 50, 75]} target={[10, 25, 0]}/>
 		<SC.OrbitControls enableZoom={true} enableRotate={true}/>
