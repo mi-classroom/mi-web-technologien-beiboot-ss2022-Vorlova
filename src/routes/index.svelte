@@ -12,6 +12,12 @@
 	let files: any;
 	let images: any[] = [];
 
+	let lineMaterial = new THREE.LineBasicMaterial( { color: 0x0000ff } );
+	let lineGeometry = new THREE.BoxGeometry( 100, 0.5, 0.5, 10, 10, 10);
+	
+	let groundMaterial = new THREE.LineBasicMaterial( { color: 0x00ff00 } );
+	let groundGeometry = new THREE.BoxGeometry( 150, 0, 150);
+
 	// debug
 	images.push({
 		src: 'https://cdn.pixabay.com/photo/2014/04/13/20/49/cat-323262_1280.jpg',
@@ -87,15 +93,18 @@
 
 <h1>Gallery:</h1>
 
-<div style="width: 99%; height: 85%; position: absolute;">
+<div class="gallery">
 	<SC.Canvas antialias background={new THREE.Color('papayawhip')}>
-		<SC.Mesh geometry={new THREE.BoxGeometry()} />
-		<SC.PerspectiveCamera position={[1, 1, 3]} />
+		<SC.Mesh geometry={groundGeometry} material={groundMaterial} position={[0, 0, 0]} />
+		
+		<SC.Mesh geometry={lineGeometry} material={lineMaterial}  position={[0, 1, 0]} />
+		<SC.PerspectiveCamera position={[50, 50, 75]} target={[10, 25, 0]}/>
+		<SC.OrbitControls enableZoom={true} enableRotate={true}/>
 	</SC.Canvas>
 </div>
 
-<div>
-	<ul class="gallery">
+<!-- <div>
+	<ul>
 		{#each images as item}
 			<li>
 				<div id="image-frame">
@@ -113,7 +122,6 @@
 			</li>
 		{/each}	
 	</ul>
-</div>
-
+</div> -->
 
 <style lang="scss" src="../assets/styles/scss/styles.scss"></style>
