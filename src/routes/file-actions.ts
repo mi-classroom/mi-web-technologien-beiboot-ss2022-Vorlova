@@ -11,7 +11,6 @@ export const extractImageItems = (
     },
     images: any,
 ) => {
-    images = [];
     jsonObj.items.forEach(item => {
         if(item.isBestOf == true) {
             const medium: string = removeBrackets(item.medium);
@@ -26,14 +25,9 @@ export const extractImageItems = (
             });
         }
     });
+    return images;
 }
 
-export const sortImages = (images: any) => {
-    images.sort((a: any, b: any) => {
-        return a.sortingPosition.localeCompare(b.sortingPosition);
-    });
-}
-
-export const removeBrackets = (entry: string): string => {
+const removeBrackets = (entry: string): string => {
     return entry.split('(')[0].split('[')[0];
 }

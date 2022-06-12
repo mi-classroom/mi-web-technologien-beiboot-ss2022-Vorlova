@@ -1,7 +1,10 @@
 <script lang="ts">
 	import * as THREE from 'three';
+	import { Font } from 'three/examples/jsm/loaders/FontLoader.js';
+	import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 	import * as SC from 'svelte-cubed';
-	import { extractImageItems, handleJSON, sortImages } from './file-actions';
+	import { extractImageItems, handleJSON } from './file-actions';
+	import * as OpenFont from './resources/fonts/Open_Sans_Regular.json';
 
 	let files: any;
 	let images: any[] = [];
@@ -28,7 +31,39 @@
 
 	// define image planes
 	let imageGeometry = new THREE.BoxGeometry( 20, 40, 1);
-	let imagePosition: [number, number, number] = [-60, 27.5, 15];
+	let imagePosition: [number, number, number] = [-80, 50, 15];
+
+	//Signs:
+	const signGeometry = new THREE.BoxGeometry( 35, 15, 1);let signPosition: [number, number, number] = [imagePosition[0], imagePosition[1]-30, imagePosition[2]];
+
+	let signMaterial: any[];
+	signMaterial = [
+		// right
+		new THREE.MeshBasicMaterial({ color: 0x000000 }),
+		// left
+		new THREE.MeshBasicMaterial({ color: 0x000000 }),
+		// top
+		new THREE.MeshBasicMaterial({ color: 0x000000 }),
+		// bottom
+		new THREE.MeshBasicMaterial({ color: 0x000000 }),
+		// back ?
+		new THREE.MeshBasicMaterial({ color: 0x000000 }),
+		// front ?
+		new THREE.MeshBasicMaterial({ color: 0xffffff }),
+	];
+
+	// Texts
+	let textGeometries: any[] = [];
+	const font = new Font( OpenFont );
+	const generateSignText = (image: any) => {
+		const text: string = 'Title: '+image.title;
+		textGeometries.push( new TextGeometry( text, {
+			font: font,
+			size: 2,
+			height: 1,
+		} ));
+	}
+	let textPosition: [number, number, number] = [ signPosition[0], signPosition[1]+2, signPosition[2]-16];
 
 	let materials: any[] = [];
 	// TODO: define image type
@@ -54,12 +89,28 @@
 		]);
 	}
 
+	const sortImages = (images: any) => {
+    	images.sort((a: any, b: any) => {
+        	return a.sortingPosition.localeCompare(b.sortingPosition);
+    	});
+	}
+
+	const resetData = () => {
+		images = [];
+		textGeometries = [];
+		imagePosition = [-80, 50, 15];
+		signPosition = [imagePosition[0], imagePosition[1]-30, imagePosition[2]];
+		textPosition = [ signPosition[0], signPosition[1]+2, signPosition[2]-16];
+	}
+
 	let handleSubmit = () => {
+		resetData();
+
 		handleJSON(files).then(
 			function(value) {
-				extractImageItems(value, images);
-				sortImages(images);
-				images = images;
+				const extractedImages = extractImageItems(value, images);
+				sortImages(extractedImages);
+				images = extractedImages;
 				materials = [];
 			}
 		);
@@ -82,13 +133,18 @@
 
 <h1>Gallery:</h1>
 <div class="gallery">
-	<SC.Canvas antialias background={new THREE.Color(180, 180, 180)}>
-		<SC.Mesh geometry={groundGeometry} material={groundMaterial} position={[0, 0, 0]} />
-		<SC.Mesh geometry={lineGeometry} material={lineMaterial}  position={[0, 1, 0]} />
+	<SC.Canvas
+		antialias
+		background={new THREE.Color(180, 180, 180)}
+	>
 		<SC.PerspectiveCamera position={[50, 50, 75]} target={[10, 25, 0]}/>
 		<SC.OrbitControls enableZoom={true} enableRotate={true}/>
-		<SC.AmbientLight intensity={0.6} />
-		<SC.DirectionalLight intensity={0.6} position={[-2, 3, 2]} />
+		<SC.AmbientLight intensity={1} />
+		<SC.DirectionalLight intensity={0.6} position={[-2, 3, 2]} shadow={{ mapSize: [2048, 2048] }}/>
+
+		<SC.Mesh geometry={groundGeometry} material={groundMaterial} position={[0, 0, 0]} receiveShadow/>
+		<SC.Mesh geometry={lineGeometry} material={lineMaterial}  position={[0, 1, 0]} />
+
 		{#each images as item, index}
 			{loadImageTextures(item)}
 			<SC.Mesh
@@ -96,10 +152,34 @@
 				material={materials[index]}
 				position={imagePosition}
 				rotation={[0, Math.PI / 2, 0]}
+				castShadow
+			/>
+			<SC.Mesh
+				geometry={signGeometry}
+				material={signMaterial}
+				position={signPosition}
+				rotation={[0, Math.PI / 2, 0]}
+				castShadow
+			/>
+			{generateSignText(item)}
+			<SC.Mesh
+				geometry={textGeometries[index]}
+				material={lineMaterial}
+				position={textPosition}
+				rotation={[0, Math.PI / -2, 0]}
 			/>
 			{imagePosition[0]=imagePosition[0]+30}
+			{signPosition[0]=signPosition[0]+30}
+			{textPosition[0]=textPosition[0]+30}
 		{/each}
 	</SC.Canvas>
 </div>
 
 <style lang="scss" src="../assets/styles/scss/styles.scss"></style>
+
+<!-- TODOS:
+*
+* - Information is under the images
+* - Images of the same year are next to each other
+*
+-->
