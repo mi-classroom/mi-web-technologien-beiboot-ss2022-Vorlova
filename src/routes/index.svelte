@@ -102,25 +102,4 @@
 	</SC.Canvas>
 </div>
 
-<!-- <div>
-	<ul>
-		{#each images as item}
-			<li>
-				<div id="image-frame">
-					<img
-					class=galleryItem
-					alt="Preview of {item.title}"
-					src={item.src}
-					>
-				</div>
-				<div id="image-data">
-					<b>{item.title}</b>, {item.date}<br>
-					{item.medium}<br>
-					<i>{item.repository}</i>
-				</div>
-			</li>
-		{/each}
-	</ul>
-</div> -->
-
 <style lang="scss" src="../assets/styles/scss/styles.scss"></style>
