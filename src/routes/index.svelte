@@ -1,9 +1,20 @@
 <script lang="ts">
 	import * as THREE from 'three';
 	import * as SC from 'svelte-cubed';
+	import { extractImageItems, handleJSON, sortImages } from './file-actions';
 
 	let files: any;
 	let images: any[] = [];
+
+	// debug
+	images.push({
+		src: 'https://cdn.pixabay.com/photo/2014/04/13/20/49/cat-323262_1280.jpg',
+		title: 'Title 1',
+	},
+	{
+		src: 'https://images.pexels.com/photos/6447547/pexels-photo-6447547.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+		title: 'Title 2',
+	});
 
 	const loader = new THREE.TextureLoader();
 
@@ -43,63 +54,15 @@
 		]);
 	}
 
-	// debug
-	images.push({
-		src: 'https://cdn.pixabay.com/photo/2014/04/13/20/49/cat-323262_1280.jpg',
-		title: 'Title 1',
-	},
-	{
-		src: 'https://images.pexels.com/photos/6447547/pexels-photo-6447547.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-		title: 'Title 2',
-	});
-
 	let handleSubmit = () => {
-		handleJSON().then(
+		handleJSON(files).then(
 			function(value) {
-				extractImageItems(value);
-				sortImages();
+				extractImageItems(value, images);
+				sortImages(images);
 				images = images;
 				materials = [];
 			}
 		);
-	}
-
-	let handleJSON = async () => {
-		let jsonObj;
-		let text = await files[0].text();
-		jsonObj = JSON.parse(text);
-
-		return jsonObj;
-	}
-
-	let extractImageItems = (jsonObj: {
-        items: [any],
-    }) => {
-		images = [];
-		jsonObj.items.forEach(item => {
-			if(item.isBestOf == true) {
-				let medium: string = removeBrackets(item.medium);
-
-				images.push({
-					src: item.images.overall.images[0].sizes.medium.src,
-					title: item.metadata.title,
-					date: item.metadata.date,
-					medium,
-					repository: item.repository,
-					sortingPosition: item.sortingNumber,
-				});
-			}
-		});
-	}
-
-	let sortImages = () => {
-		images.sort((a, b) => {
-			return a.sortingPosition.localeCompare(b.sortingPosition);
-		});
-	}
-
-	let removeBrackets = (entry: string): string => {
-		return entry.split('(')[0].split('[')[0];
 	}
 </script>
 
