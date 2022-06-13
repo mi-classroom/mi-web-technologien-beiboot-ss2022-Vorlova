@@ -4,7 +4,7 @@
 	import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 	import * as SC from 'svelte-cubed';
 	import { extractImageItems, handleJSON } from './file-actions';
-	import * as OpenFont from './resources/fonts/Open_Sans_Regular.json';
+	import * as OpenFont from '../assets/fonts/Open_Sans_Regular.json';
 
 	let files: any;
 	let images: any[] = [];
@@ -137,7 +137,7 @@
 		antialias
 		background={new THREE.Color(180, 180, 180)}
 	>
-		<SC.PerspectiveCamera position={[50, 50, 75]} target={[10, 25, 0]}/>
+		<SC.PerspectiveCamera position={[-100, 50, 75]} target={[10, 25, 0]}/>
 		<SC.OrbitControls enableZoom={true} enableRotate={true}/>
 		<SC.AmbientLight intensity={1} />
 		<SC.DirectionalLight intensity={0.6} position={[-2, 3, 2]} shadow={{ mapSize: [2048, 2048] }}/>
@@ -180,6 +180,8 @@
 <!-- TODOS:
 *
 * - Information is under the images
+* - images are properly sized
+*	- 
 * - Images of the same year are next to each other
 *
 -->
