@@ -16,12 +16,12 @@
 	images.push({
 		src: 'https://cdn.pixabay.com/photo/2014/04/13/20/49/cat-323262_1280.jpg',
 		title: 'Title 1',
-		date: '2022'
+		sortingPosition: '2022'
 	},
 	{
 		src: 'https://images.pexels.com/photos/6447547/pexels-photo-6447547.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
 		title: 'Title 2',
-		date: 'um 2022'
+		sortingPosition: '2023-03'
 	});
 
 	const loader = new THREE.TextureLoader();
@@ -35,7 +35,8 @@
 
 	// define image planes
 	let imageGeometry = new THREE.BoxGeometry( 20, 40, 1);
-	let imagePosition: [number, number, number] = [-1000, 50, 15];
+	const defaultImagePosition: [number, number, number] = [-1000, 50, 15];
+	let imagePosition: [number, number, number] = defaultImagePosition.slice();
 
 	const cameraPosition: [number, number, number] = [-1020, 50, 15];
 
@@ -72,7 +73,7 @@
 
 	// Year 3d Texts
 	let yearGeometries: any[] = [];
-	let yearPosition: [number, number, number] = [ imagePosition[0], imagePosition[1], imagePosition[2]-50 ];
+	let yearPosition: [number, number, number] = [ imagePosition[0], imagePosition[1] -20, imagePosition[2] -75 ];
 
 	let materials: any[] = [];
 	// TODO: define image type
@@ -107,7 +108,7 @@
 	const resetData = () => {
 		images = [];
 		textGeometries = [];
-		imagePosition = [-1000, 50, 15];
+		imagePosition = defaultImagePosition.slice();
 		signPosition = [imagePosition[0], imagePosition[1]-30, imagePosition[2]];
 		textPosition = [ signPosition[0], signPosition[1]+2, signPosition[2]-16];
 		yearGeometries = [];
@@ -129,18 +130,8 @@
 	}
 
 	const cleanUpYear = (itemDate: string) => {
-		itemYear = itemDate.split(' ')
-		if (itemYear.length > 1) {
-			if( !isNaN(
-				parseInt(itemYear[0])
-			)) {
-				years.push(itemYear[0])
-			} else {
-				years.push(itemYear[1])
-			}
-		} else {
-			years.push(itemDate)
-		}
+		itemYear = itemDate.split('-');
+		years.push(itemYear[0])
 	}
 </script>
 
@@ -173,25 +164,33 @@
 
 		{#each images as item, index}
 			{loadImageTextures(item)}
-			{#if item.date != undefined}
-				{cleanUpYear(item.date)}
-				{yearGeometries.push(
-					new TextGeometry(
-						years[index],
-						{
-							font: font,
-							size: 5,
-							height: 2,
-						},
-					)
-				)}
+			{cleanUpYear(item.sortingPosition)}
+			{yearGeometries.push(
+				new TextGeometry(
+					years[index],
+					{
+						font: font,
+						size: 10,
+						height: 2,
+					},
+				)
+			)}
+			{#if years[index-1] != years[index] || years.length == 1}
+				{imagePosition[0]=imagePosition[0]+150}
+				{textPosition[0]=textPosition[0]+150}
+				{imagePosition[1]=defaultImagePosition[1]}
+				{textPosition[1]=imagePosition[1] - 25}
+				<SC.Mesh
+					geometry={yearGeometries[index]}
+					material={lineMaterial}
+					position={yearPosition}
+					rotation={[0, Math.PI / -2, 0]}
+				/>
+				{yearPosition[0]=yearPosition[0]+150}
+			{:else}
+				{imagePosition[1]=imagePosition[1]+50}
+				{textPosition[1]=textPosition[1]+50}
 			{/if}
-			<SC.Mesh
-				geometry={yearGeometries[index]}
-				material={lineMaterial}
-				position={yearPosition}
-				rotation={[0, Math.PI / -2, 0]}
-			/>
 			<SC.Mesh
 				geometry={imageGeometry}
 				material={materials[index]}
@@ -213,12 +212,9 @@
 				position={textPosition}
 				rotation={[0, Math.PI / -2, 0]}
 			/>
-			{imagePosition[0]=imagePosition[0]+150}
 			{signPosition[0]=signPosition[0]+150}
-			{textPosition[0]=textPosition[0]+150}
-			{yearPosition[0]=yearPosition[0]+150}
 		{/each}
-	</SC.Canvas>
+		</SC.Canvas>
 </div>
 
 <style lang="scss" src="../assets/styles/scss/styles.scss"></style>
@@ -226,8 +222,12 @@
 <!-- TODOS:
 *
 * - Information is under the images
+*	- remove brackets from title
+*	- add Künstler (InvolvedPersons[0].name)
+*	- add medium (alle Angaben in Klammern bitte weglassen)
+*	- add repository
 * - images are properly sized
 *	- 
-* - Images of the same year are next to each other
+* X Images of the same year are next to each other
 *
 -->
