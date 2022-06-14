@@ -291,16 +291,3 @@
 </div>
 
 <style lang="scss" src="../assets/styles/scss/styles.scss"></style>
-
-<!-- TODOS:
-*
-* X Information is under the images
-*	X remove brackets from title
-*	X add Künstler (InvolvedPersons[0].name)
-*	X add medium (alle Angaben in Klammern bitte weglassen)
-*	X add repository
-* - images are properly sized
-*	- 
-* X Images of the same year are next to each other
-*
--->
