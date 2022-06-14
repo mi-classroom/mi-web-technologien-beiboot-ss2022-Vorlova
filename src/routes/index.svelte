@@ -12,6 +12,10 @@
 	let itemYear: string[];
 	const font = new Font( OpenFont );
 
+	const imageBasicWidth = 20;
+	const imageBasicHeight = 40;
+	const imageBasicDepth = 1;
+
 	// debug
 	images.push({
 		src: 'https://cdn.pixabay.com/photo/2014/04/13/20/49/cat-323262_1280.jpg',
@@ -36,7 +40,7 @@
 	let groundGeometry = new THREE.BoxGeometry( 5000, 0, 1024);
 
 	// define image planes
-	let imageGeometry = new THREE.BoxGeometry( 20, 40, 1);
+	let imageGeometry = new THREE.BoxGeometry( imageBasicWidth, imageBasicHeight, imageBasicDepth);
 	const defaultImagePosition: [number, number, number] = [-1000, 50, 15];
 	let imagePosition: [number, number, number] = defaultImagePosition.slice();
 
@@ -52,7 +56,7 @@
 			height: 1,
 		} ));
 	}
-	let titlePosition: [number, number, number] = [ imagePosition[0], imagePosition[1] -27, imagePosition[2]-16 ];
+	let titlePosition: [number, number, number] = [ imagePosition[0], imagePosition[1], imagePosition[2] + 40 ];
 
 	let dateGeometries: any[] = [];
 	const generateDate = (image: any) => {
@@ -101,7 +105,7 @@
 
 	// Year 3d Texts
 	let yearGeometries: any[] = [];
-	let yearPosition: [number, number, number] = [ imagePosition[0], imagePosition[1] -20, imagePosition[2] -75 ];
+	let yearPosition: [number, number, number] = [ imagePosition[0], imagePosition[1], imagePosition[2] - 100 ];
 
 	let materials: any[] = [];
 	// TODO: define image type
@@ -143,7 +147,7 @@
 		repositoryGeometries = [];
 
 		imagePosition = defaultImagePosition.slice();
-		titlePosition = [ imagePosition[0], imagePosition[1] -27, imagePosition[2]-16 ];
+		titlePosition = [ imagePosition[0], imagePosition[1], imagePosition[2] + 40 ];
 		datePosition = [ titlePosition[0], titlePosition[1] - 5, titlePosition[2] ];
 		artistPosition = [ datePosition[0], datePosition[1] - 5, datePosition[2] ];
 		mediumPosition = [ artistPosition[0], artistPosition[1] - 5, artistPosition[2] ];
@@ -151,7 +155,7 @@
 
 		yearGeometries = [];
 		years = [];
-		yearPosition = [ imagePosition[0], imagePosition[1], imagePosition[2]-50 ];
+		yearPosition = [ imagePosition[0], imagePosition[1], imagePosition[2]- 100 ];
 	}
 
 	let handleSubmit = () => {
@@ -208,7 +212,7 @@
 					years[index],
 					{
 						font: font,
-						size: 10,
+						size: 12,
 						height: 2,
 					},
 				)
@@ -235,15 +239,15 @@
 				/>
 				{yearPosition[0]=yearPosition[0]+150}
 			{:else}
-				{imagePosition[1]=imagePosition[1]+100}
-				{titlePosition[1]=titlePosition[1]+100}
-				{datePosition[1]=datePosition[1]+100}
-				{artistPosition[1]=artistPosition[1]+100}
-				{mediumPosition[1]=mediumPosition[1]+100}
-				{repositoryPosition[1]=repositoryPosition[1]+100}
+				{imagePosition[1]=imagePosition[1]+ item.dimensions.height + 50}
+				{titlePosition[1]=titlePosition[1]+ item.dimensions.height + 50}
+				{datePosition[1]=datePosition[1]+ item.dimensions.height + 50}
+				{artistPosition[1]=artistPosition[1]+ item.dimensions.height + 50}
+				{mediumPosition[1]=mediumPosition[1]+ item.dimensions.height + 50}
+				{repositoryPosition[1]=repositoryPosition[1]+ item.dimensions.height + 50}
 			{/if}
 			<SC.Mesh
-				geometry={imageGeometry}
+				geometry={item.dimensions ? new THREE.BoxGeometry(item.dimensions.width, item.dimensions.height, imageBasicDepth) : imageGeometry}
 				material={materials[index]}
 				position={imagePosition}
 				rotation={[0, Math.PI / 2, 0]}

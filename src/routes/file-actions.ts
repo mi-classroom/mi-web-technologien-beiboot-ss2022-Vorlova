@@ -15,6 +15,7 @@ export const extractImageItems = (
         if(item.isBestOf == true) {
             const medium: string = removeBrackets(item.medium);
             const title: string = removeBrackets(item.metadata.title);
+            const dimensions = formatDimensions(item.images.overall.images[0].sizes.medium.dimensions);
 
             images.push({
                 src: item.images.overall.images[0].sizes.medium.src,
@@ -24,6 +25,7 @@ export const extractImageItems = (
                 repository: item.repository,
                 sortingPosition: item.sortingNumber,
                 artist: item.involvedPersons[0].name,
+                dimensions,
             });
         }
     });
@@ -32,4 +34,14 @@ export const extractImageItems = (
 
 const removeBrackets = (entry: string): string => {
     return entry.split('(')[0].split('[')[0];
+}
+
+const formatDimensions = (dimensions: {
+    'width': number,
+    'height': number,
+}) => {
+    return {
+        'width': dimensions.width / 10,
+        'height': dimensions.height / 10,
+    }
 }
