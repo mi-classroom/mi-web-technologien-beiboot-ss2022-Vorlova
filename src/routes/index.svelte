@@ -54,6 +54,17 @@
 	}
 	let titlePosition: [number, number, number] = [ imagePosition[0], imagePosition[1] -27, imagePosition[2]-16 ];
 
+	let dateGeometries: any[] = [];
+	const generateDate = (image: any) => {
+		const text: string = 'Date: ' + image.date;
+		dateGeometries.push( new TextGeometry( text, {
+			font: font,
+			size: 2,
+			height: 1,
+		} ));
+	}
+	let datePosition: [number, number, number] = [ titlePosition[0], titlePosition[1] -5, titlePosition[2] ];
+
 	let artistGeometries: any[] = [];
 	const generateArtist = (image: any) => {
 		const text: string = 'Artist: ' + image.artist;
@@ -63,7 +74,7 @@
 			height: 1,
 		} ));
 	}
-	let artistPosition: [number, number, number] = [ titlePosition[0], titlePosition[1] - 5, titlePosition[2] ];
+	let artistPosition: [number, number, number] = [ datePosition[0], datePosition[1] - 5, datePosition[2] ];
 
 	let mediumGeometries: any[] = [];
 	const generateMedium = (image: any) => {
@@ -124,15 +135,20 @@
 
 	const resetData = () => {
 		images = [];
+
 		titleGeometries = [];
+		dateGeometries = [];
 		artistGeometries = [];
 		mediumGeometries = [];
 		repositoryGeometries = [];
+
 		imagePosition = defaultImagePosition.slice();
 		titlePosition = [ imagePosition[0], imagePosition[1] -27, imagePosition[2]-16 ];
-		artistPosition = [ titlePosition[0], titlePosition[1] - 5, titlePosition[2] ];
+		datePosition = [ titlePosition[0], titlePosition[1] - 5, titlePosition[2] ];
+		artistPosition = [ datePosition[0], datePosition[1] - 5, datePosition[2] ];
 		mediumPosition = [ artistPosition[0], artistPosition[1] - 5, artistPosition[2] ];
 		repositoryPosition = [ mediumPosition[0], mediumPosition[1] - 5, mediumPosition[2] ];
+
 		yearGeometries = [];
 		years = [];
 		yearPosition = [ imagePosition[0], imagePosition[1], imagePosition[2]-50 ];
@@ -200,13 +216,15 @@
 			{#if years[index-1] != years[index] || years.length == 1}
 				{imagePosition[0]=imagePosition[0]+150}
 				{titlePosition[0]=titlePosition[0]+150}
+				{datePosition[0]=datePosition[0]+150}
 				{artistPosition[0]=artistPosition[0]+150}
 				{mediumPosition[0]=mediumPosition[0]+150}
 				{repositoryPosition[0]=repositoryPosition[0]+150}
 
 				{imagePosition[1]=defaultImagePosition[1]}
 				{titlePosition[1]=imagePosition[1] - 25}
-				{artistPosition[1]=titlePosition[1] - 5}
+				{datePosition[1]=titlePosition[1] - 5}
+				{artistPosition[1]=datePosition[1] - 5}
 				{mediumPosition[1]=artistPosition[1] - 5}
 				{repositoryPosition[1]=mediumPosition[1] - 5}
 				<SC.Mesh
@@ -217,11 +235,12 @@
 				/>
 				{yearPosition[0]=yearPosition[0]+150}
 			{:else}
-				{imagePosition[1]=imagePosition[1]+75}
-				{titlePosition[1]=titlePosition[1]+75}
-				{artistPosition[1]=artistPosition[1]+75}
-				{mediumPosition[1]=mediumPosition[1]+75}
-				{repositoryPosition[1]=repositoryPosition[1]+75}
+				{imagePosition[1]=imagePosition[1]+100}
+				{titlePosition[1]=titlePosition[1]+100}
+				{datePosition[1]=datePosition[1]+100}
+				{artistPosition[1]=artistPosition[1]+100}
+				{mediumPosition[1]=mediumPosition[1]+100}
+				{repositoryPosition[1]=repositoryPosition[1]+100}
 			{/if}
 			<SC.Mesh
 				geometry={imageGeometry}
@@ -230,15 +249,22 @@
 				rotation={[0, Math.PI / 2, 0]}
 				castShadow
 			/>
+			<!-- BEGIN Image Infos -->
 			{generateTitle(item)}
 			{generateArtist(item)}
 			{generateMedium(item)}
 			{generateRepository(item)}
-			<!-- BEGIN Image Infos -->
+			{generateDate(item)}
 			<SC.Mesh
 				geometry={titleGeometries[index]}
 				material={lineMaterial}
 				position={titlePosition}
+				rotation={[0, Math.PI / -2, 0]}
+			/>
+			<SC.Mesh
+				geometry={dateGeometries[index]}
+				material={lineMaterial}
+				position={datePosition}
 				rotation={[0, Math.PI / -2, 0]}
 			/>
 			<SC.Mesh
