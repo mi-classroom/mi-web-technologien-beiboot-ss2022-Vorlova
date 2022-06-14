@@ -1,10 +1,10 @@
 <script lang="ts">
-	import * as THREE from 'three';
 	import { Font } from 'three/examples/jsm/loaders/FontLoader.js';
 	import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 	import * as SC from 'svelte-cubed';
 	import { extractImageItems, handleJSON } from './file-actions';
 	import * as OpenFont from '../assets/fonts/Open_Sans_Regular.json';
+	import { BoxGeometry, Color, LineBasicMaterial, MeshBasicMaterial, MeshStandardMaterial, TextureLoader } from 'three';
 
 	let files: any;
 	let images: any[] = [];
@@ -30,17 +30,17 @@
 		artist: 'Photographer'
 	});
 
-	const loader = new THREE.TextureLoader();
+	const loader = new TextureLoader();
 
 	// define timeline base
-	const lineMaterial = new THREE.LineBasicMaterial( { color: 0x222222 } );
+	const lineMaterial = new LineBasicMaterial( { color: 0x222222 } );
 
 	// define ground plane for orientation
-	const groundMaterial = new THREE.MeshStandardMaterial({ color: 0xb4b4b4 });
-	let groundGeometry = new THREE.BoxGeometry( 5000, 0, 1024);
+	const groundMaterial = new MeshStandardMaterial({ color: 0xb4b4b4 });
+	let groundGeometry = new BoxGeometry( 5000, 0, 1024);
 
 	// define image planes
-	let imageGeometry = new THREE.BoxGeometry( imageBasicWidth, imageBasicHeight, imageBasicDepth);
+	let imageGeometry = new BoxGeometry( imageBasicWidth, imageBasicHeight, imageBasicDepth);
 	const defaultImagePosition: [number, number, number] = [-1000, 50, 15];
 	let imagePosition: [number, number, number] = defaultImagePosition.slice();
 
@@ -117,17 +117,17 @@
 
 		materials.push([
 			// right
-			new THREE.MeshBasicMaterial({ color: 0x000000 }),
+			new MeshBasicMaterial({ color: 0x000000 }),
 			// left
-			new THREE.MeshBasicMaterial({ color: 0x000000 }),
+			new MeshBasicMaterial({ color: 0x000000 }),
 			// top
-			new THREE.MeshBasicMaterial({ color: 0x000000 }),
+			new MeshBasicMaterial({ color: 0x000000 }),
 			// bottom
-			new THREE.MeshBasicMaterial({ color: 0x000000 }),
+			new MeshBasicMaterial({ color: 0x000000 }),
 			// back ?
-			new THREE.MeshBasicMaterial({ color: 0x000000 }),
+			new MeshBasicMaterial({ color: 0x000000 }),
 			// front ?
-			new THREE.MeshBasicMaterial({map: loader.load(newUrl)}),
+			new MeshBasicMaterial({map: loader.load(newUrl)}),
 		]);
 	}
 
@@ -195,7 +195,7 @@
 <div class="gallery">
 	<SC.Canvas
 		antialias
-		background={new THREE.Color(180, 180, 180)}
+		background={new Color(180, 180, 180)}
 	>
 		<SC.PerspectiveCamera position={cameraPosition} target={ [10, 25, 0] }/>
 		<SC.OrbitControls enableZoom={true} enableRotate={true}/>
@@ -247,7 +247,7 @@
 				{repositoryPosition[1]=repositoryPosition[1]+ item.dimensions.height + 50}
 			{/if}
 			<SC.Mesh
-				geometry={item.dimensions ? new THREE.BoxGeometry(item.dimensions.width, item.dimensions.height, imageBasicDepth) : imageGeometry}
+				geometry={item.dimensions ? new BoxGeometry(item.dimensions.width, item.dimensions.height, imageBasicDepth) : imageGeometry}
 				material={materials[index]}
 				position={imagePosition}
 				rotation={[0, Math.PI / 2, 0]}
