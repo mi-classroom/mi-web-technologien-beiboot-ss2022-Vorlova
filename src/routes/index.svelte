@@ -16,12 +16,14 @@
 	images.push({
 		src: 'https://cdn.pixabay.com/photo/2014/04/13/20/49/cat-323262_1280.jpg',
 		title: 'Title 1',
-		sortingPosition: '2022'
+		sortingPosition: '2022',
+		artist: 'Somebody'
 	},
 	{
 		src: 'https://images.pexels.com/photos/6447547/pexels-photo-6447547.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
 		title: 'Title 2',
-		sortingPosition: '2023-03'
+		sortingPosition: '2023-03',
+		artist: 'Photographer'
 	});
 
 	const loader = new THREE.TextureLoader();
@@ -31,7 +33,7 @@
 
 	// define ground plane for orientation
 	const groundMaterial = new THREE.MeshStandardMaterial({ color: 0xb4b4b4 });
-	let groundGeometry = new THREE.BoxGeometry( 2048, 0, 2048);
+	let groundGeometry = new THREE.BoxGeometry( 5000, 0, 1024);
 
 	// define image planes
 	let imageGeometry = new THREE.BoxGeometry( 20, 40, 1);
@@ -40,36 +42,51 @@
 
 	const cameraPosition: [number, number, number] = [-1020, 50, 15];
 
-	//Signs:
-	const signGeometry = new THREE.BoxGeometry( 35, 15, 1);let signPosition: [number, number, number] = [imagePosition[0], imagePosition[1]-30, imagePosition[2]];
-
-	let signMaterial: any[];
-	signMaterial = [
-		// right
-		new THREE.MeshBasicMaterial({ color: 0x000000 }),
-		// left
-		new THREE.MeshBasicMaterial({ color: 0x000000 }),
-		// top
-		new THREE.MeshBasicMaterial({ color: 0x000000 }),
-		// bottom
-		new THREE.MeshBasicMaterial({ color: 0x000000 }),
-		// back ?
-		new THREE.MeshBasicMaterial({ color: 0x000000 }),
-		// front ?
-		new THREE.MeshBasicMaterial({ color: 0xffffff }),
-	];
-
-	// Sign Texts
-	let textGeometries: any[] = [];
-	const generateSignText = (image: any) => {
-		const text: string = 'Title: '+image.title;
-		textGeometries.push( new TextGeometry( text, {
+	// Texts
+	let titleGeometries: any[] = [];
+	const generateTitle = (image: any) => {
+		const text: string = 'Title: ' + image.title;
+		titleGeometries.push( new TextGeometry( text, {
 			font: font,
 			size: 2,
 			height: 1,
 		} ));
 	}
-	let textPosition: [number, number, number] = [ signPosition[0], signPosition[1]+2, signPosition[2]-16 ];
+	let titlePosition: [number, number, number] = [ imagePosition[0], imagePosition[1] -27, imagePosition[2]-16 ];
+
+	let artistGeometries: any[] = [];
+	const generateArtist = (image: any) => {
+		const text: string = 'Artist: ' + image.artist;
+		artistGeometries.push( new TextGeometry( text, {
+			font: font,
+			size: 2,
+			height: 1,
+		} ));
+	}
+	let artistPosition: [number, number, number] = [ titlePosition[0], titlePosition[1] - 5, titlePosition[2] ];
+
+	let mediumGeometries: any[] = [];
+	const generateMedium = (image: any) => {
+		const text: string = 'Medium: ' + image.medium;
+		mediumGeometries.push( new TextGeometry( text, {
+			font: font,
+			size: 2,
+			height: 1,
+		} ));
+	}
+	let mediumPosition: [number, number, number] = [ artistPosition[0], artistPosition[1] - 5, artistPosition[2] ];
+
+	let repositoryGeometries: any[] = [];
+	const generateRepository = (image: any) => {
+		const text: string = 'Repository: ' + image.repository;
+		repositoryGeometries.push( new TextGeometry( text, {
+			font: font,
+			size: 2,
+			height: 1,
+		} ));
+	}
+	let repositoryPosition: [number, number, number] = [ mediumPosition[0], mediumPosition[1] - 5, mediumPosition[2] ];
+
 
 	// Year 3d Texts
 	let yearGeometries: any[] = [];
@@ -107,10 +124,15 @@
 
 	const resetData = () => {
 		images = [];
-		textGeometries = [];
+		titleGeometries = [];
+		artistGeometries = [];
+		mediumGeometries = [];
+		repositoryGeometries = [];
 		imagePosition = defaultImagePosition.slice();
-		signPosition = [imagePosition[0], imagePosition[1]-30, imagePosition[2]];
-		textPosition = [ signPosition[0], signPosition[1]+2, signPosition[2]-16];
+		titlePosition = [ imagePosition[0], imagePosition[1] -27, imagePosition[2]-16 ];
+		artistPosition = [ titlePosition[0], titlePosition[1] - 5, titlePosition[2] ];
+		mediumPosition = [ artistPosition[0], artistPosition[1] - 5, artistPosition[2] ];
+		repositoryPosition = [ mediumPosition[0], mediumPosition[1] - 5, mediumPosition[2] ];
 		yearGeometries = [];
 		years = [];
 		yearPosition = [ imagePosition[0], imagePosition[1], imagePosition[2]-50 ];
@@ -177,9 +199,16 @@
 			)}
 			{#if years[index-1] != years[index] || years.length == 1}
 				{imagePosition[0]=imagePosition[0]+150}
-				{textPosition[0]=textPosition[0]+150}
+				{titlePosition[0]=titlePosition[0]+150}
+				{artistPosition[0]=artistPosition[0]+150}
+				{mediumPosition[0]=mediumPosition[0]+150}
+				{repositoryPosition[0]=repositoryPosition[0]+150}
+
 				{imagePosition[1]=defaultImagePosition[1]}
-				{textPosition[1]=imagePosition[1] - 25}
+				{titlePosition[1]=imagePosition[1] - 25}
+				{artistPosition[1]=titlePosition[1] - 5}
+				{mediumPosition[1]=artistPosition[1] - 5}
+				{repositoryPosition[1]=mediumPosition[1] - 5}
 				<SC.Mesh
 					geometry={yearGeometries[index]}
 					material={lineMaterial}
@@ -188,8 +217,11 @@
 				/>
 				{yearPosition[0]=yearPosition[0]+150}
 			{:else}
-				{imagePosition[1]=imagePosition[1]+50}
-				{textPosition[1]=textPosition[1]+50}
+				{imagePosition[1]=imagePosition[1]+75}
+				{titlePosition[1]=titlePosition[1]+75}
+				{artistPosition[1]=artistPosition[1]+75}
+				{mediumPosition[1]=mediumPosition[1]+75}
+				{repositoryPosition[1]=repositoryPosition[1]+75}
 			{/if}
 			<SC.Mesh
 				geometry={imageGeometry}
@@ -198,21 +230,36 @@
 				rotation={[0, Math.PI / 2, 0]}
 				castShadow
 			/>
+			{generateTitle(item)}
+			{generateArtist(item)}
+			{generateMedium(item)}
+			{generateRepository(item)}
+			<!-- BEGIN Image Infos -->
 			<SC.Mesh
-				geometry={signGeometry}
-				material={signMaterial}
-				position={signPosition}
-				rotation={[0, Math.PI / 2, 0]}
-				castShadow
-			/>
-			{generateSignText(item)}
-			<SC.Mesh
-				geometry={textGeometries[index]}
+				geometry={titleGeometries[index]}
 				material={lineMaterial}
-				position={textPosition}
+				position={titlePosition}
 				rotation={[0, Math.PI / -2, 0]}
 			/>
-			{signPosition[0]=signPosition[0]+150}
+			<SC.Mesh
+				geometry={artistGeometries[index]}
+				material={lineMaterial}
+				position={artistPosition}
+				rotation={[0, Math.PI / -2, 0]}
+			/>
+			<SC.Mesh
+				geometry={mediumGeometries[index]}
+				material={lineMaterial}
+				position={mediumPosition}
+				rotation={[0, Math.PI / -2, 0]}
+			/>
+			<SC.Mesh
+				geometry={repositoryGeometries[index]}
+				material={lineMaterial}
+				position={repositoryPosition}
+				rotation={[0, Math.PI / -2, 0]}
+			/>
+			<!-- END image infos -->
 		{/each}
 		</SC.Canvas>
 </div>
@@ -221,11 +268,11 @@
 
 <!-- TODOS:
 *
-* - Information is under the images
-*	- remove brackets from title
-*	- add Künstler (InvolvedPersons[0].name)
-*	- add medium (alle Angaben in Klammern bitte weglassen)
-*	- add repository
+* X Information is under the images
+*	X remove brackets from title
+*	X add Künstler (InvolvedPersons[0].name)
+*	X add medium (alle Angaben in Klammern bitte weglassen)
+*	X add repository
 * - images are properly sized
 *	- 
 * X Images of the same year are next to each other

@@ -14,14 +14,16 @@ export const extractImageItems = (
     jsonObj.items.forEach(item => {
         if(item.isBestOf == true) {
             const medium: string = removeBrackets(item.medium);
+            const title: string = removeBrackets(item.metadata.title);
 
             images.push({
                 src: item.images.overall.images[0].sizes.medium.src,
-                title: item.metadata.title,
+                title,
                 date: item.metadata.date,
                 medium,
                 repository: item.repository,
                 sortingPosition: item.sortingNumber,
+                artist: item.involvedPersons[0].name,
             });
         }
     });
