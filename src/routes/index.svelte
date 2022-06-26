@@ -42,7 +42,7 @@
 	// define image planes
 	let imageGeometry = new BoxGeometry( imageBasicWidth, imageBasicHeight, imageBasicDepth);
 	const defaultImagePosition: [number, number, number] = [-1000, 50, 15];
-	let imagePosition: [number, number, number] = defaultImagePosition.slice();
+	let imagePosition: [number, number, number] = defaultImagePosition.slice(); // slice is needed to assign the values not the array reference
 
 	const cameraPosition: [number, number, number] = [-1020, 50, 15];
 

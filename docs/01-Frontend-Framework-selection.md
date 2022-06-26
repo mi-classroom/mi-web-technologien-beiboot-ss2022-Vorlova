@@ -7,7 +7,7 @@ Accepted.
 ## Context
 
 Frontent Frameworks helfen dabei komplexe UI-Elemente einfach umzusetzen.
-Zu den populärsten gehörtn u.a. Vue.js, React, Angular und neuerdings Svelte.
+Zu den populärsten gehören u.a. Vue.js, React, Angular und neuerdings Svelte.
 
 ## Decision
 
