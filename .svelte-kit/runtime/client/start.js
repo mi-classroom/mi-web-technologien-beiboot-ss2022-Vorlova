@@ -64,19 +64,13 @@ function normalize(loaded) {
 
 	if (loaded.redirect) {
 		if (!loaded.status || Math.floor(loaded.status / 100) !== 3) {
-			return {
-				status: 500,
-				error: new Error(
-					'"redirect" property returned from load() must be accompanied by a 3xx status code'
-				)
-			};
+			throw new Error(
+				'"redirect" property returned from load() must be accompanied by a 3xx status code'
+			);
 		}
 
 		if (typeof loaded.redirect !== 'string') {
-			return {
-				status: 500,
-				error: new Error('"redirect" property returned from load() must be a string')
-			};
+			throw new Error('"redirect" property returned from load() must be a string');
 		}
 	}
 
@@ -85,10 +79,7 @@ function normalize(loaded) {
 			!Array.isArray(loaded.dependencies) ||
 			loaded.dependencies.some((dep) => typeof dep !== 'string')
 		) {
-			return {
-				status: 500,
-				error: new Error('"dependencies" property returned from load() must be of type string[]')
-			};
+			throw new Error('"dependencies" property returned from load() must be of type string[]');
 		}
 	}
 
@@ -119,21 +110,13 @@ function normalize_path(path, trailing_slash) {
 	return path;
 }
 
-/**
- * Hash using djb2
- * @param {import('types').StrictBody} value
- */
-function hash(value) {
-	let hash = 5381;
-	let i = value.length;
-
-	if (typeof value === 'string') {
-		while (i) hash = (hash * 33) ^ value.charCodeAt(--i);
-	} else {
-		while (i) hash = (hash * 33) ^ value[--i];
+class LoadURL extends URL {
+	/** @returns {string} */
+	get hash() {
+		throw new Error(
+			'url.hash is inaccessible from load. Consider accessing hash from the page store within the script tag of your component.'
+		);
 	}
-
-	return (hash >>> 0).toString(36);
 }
 
 /** @param {HTMLDocument} doc */
@@ -251,6 +234,60 @@ function create_updated_store() {
 }
 
 /**
+ * Hash using djb2
+ * @param {import('types').StrictBody} value
+ */
+function hash(value) {
+	let hash = 5381;
+	let i = value.length;
+
+	if (typeof value === 'string') {
+		while (i) hash = (hash * 33) ^ value.charCodeAt(--i);
+	} else {
+		while (i) hash = (hash * 33) ^ value[--i];
+	}
+
+	return (hash >>> 0).toString(36);
+}
+
+let loading = 0;
+
+const native_fetch = window.fetch;
+
+function lock_fetch() {
+	loading += 1;
+}
+
+function unlock_fetch() {
+	loading -= 1;
+}
+
+if (import.meta.env.DEV) {
+	let can_inspect_stack_trace = false;
+
+	const check_stack_trace = async () => {
+		const stack = /** @type {string} */ (new Error().stack);
+		can_inspect_stack_trace = stack.includes('check_stack_trace');
+	};
+
+	check_stack_trace();
+
+	window.fetch = (input, init) => {
+		const url = input instanceof Request ? input.url : input.toString();
+		const stack = /** @type {string} */ (new Error().stack);
+
+		const heuristic = can_inspect_stack_trace ? stack.includes('load_node') : loading;
+		if (heuristic) {
+			console.warn(
+				`Loading ${url} using \`window.fetch\`. For best results, use the \`fetch\` that is passed to your \`load\` function: https://kit.svelte.dev/docs/loading#input-fetch`
+			);
+		}
+
+		return native_fetch(input, init);
+	};
+}
+
+/**
  * @param {RequestInfo} resource
  * @param {RequestInit} [opts]
  */
@@ -269,7 +306,7 @@ function initial_fetch(resource, opts) {
 		return Promise.resolve(new Response(body, init));
 	}
 
-	return fetch(resource, opts);
+	return native_fetch(resource, opts);
 }
 
 const param_pattern = /^(\.\.\.)?(\w+)(?:=(\w+))?$/;
@@ -589,8 +626,9 @@ function create_client({ target, session, base, trailing_slash }) {
 	 * @param {string[]} redirect_chain
 	 * @param {boolean} no_cache
 	 * @param {{hash?: string, scroll: { x: number, y: number } | null, keepfocus: boolean, details: { replaceState: boolean, state: any } | null}} [opts]
+	 * @param {() => void} [callback]
 	 */
-	async function update(url, redirect_chain, no_cache, opts) {
+	async function update(url, redirect_chain, no_cache, opts, callback) {
 		const intent = get_navigation_intent(url);
 
 		const current_token = (token = {});
@@ -663,6 +701,10 @@ function create_client({ target, session, base, trailing_slash }) {
 		if (started) {
 			current = navigation_result.state;
 
+			if (navigation_result.props.page) {
+				navigation_result.props.page.url = url;
+			}
+
 			root.$set(navigation_result.props);
 		} else {
 			initialize(navigation_result);
@@ -717,7 +759,6 @@ function create_client({ target, session, base, trailing_slash }) {
 		load_cache.promise = null;
 		load_cache.id = null;
 		autoscroll = true;
-		updating = false;
 
 		if (navigation_result.props.page) {
 			page = navigation_result.props.page;
@@ -726,7 +767,9 @@ function create_client({ target, session, base, trailing_slash }) {
 		const leaf_node = navigation_result.state.branch[navigation_result.state.branch.length - 1];
 		router_enabled = leaf_node?.module.router !== false;
 
-		return true;
+		if (callback) callback();
+
+		updating = false;
 	}
 
 	/** @param {import('./types').NavigationResult} result */
@@ -744,12 +787,12 @@ function create_client({ target, session, base, trailing_slash }) {
 			hydrate: true
 		});
 
-		started = true;
-
 		if (router_enabled) {
 			const navigation = { from: null, to: new URL(location.href) };
 			callbacks.after_navigate.forEach((fn) => fn(navigation));
 		}
+
+		started = true;
 	}
 
 	/**
@@ -905,16 +948,17 @@ function create_client({ target, session, base, trailing_slash }) {
 		}
 
 		const session = $session;
+		const load_url = new LoadURL(url);
 
 		if (module.load) {
-			/** @type {import('types').LoadInput} */
+			/** @type {import('types').LoadEvent} */
 			const load_input = {
 				routeId,
 				params: uses_params,
 				props: props || {},
 				get url() {
 					node.uses.url = true;
-					return url;
+					return load_url;
 				},
 				get session() {
 					node.uses.session = true;
@@ -924,11 +968,44 @@ function create_client({ target, session, base, trailing_slash }) {
 					node.uses.stuff = true;
 					return { ...stuff };
 				},
-				fetch(resource, info) {
-					const requested = typeof resource === 'string' ? resource : resource.url;
-					add_dependency(requested);
+				async fetch(resource, init) {
+					let requested;
 
-					return started ? fetch(resource, info) : initial_fetch(resource, info);
+					if (typeof resource === 'string') {
+						requested = resource;
+					} else {
+						requested = resource.url;
+
+						// we're not allowed to modify the received `Request` object, so in order
+						// to fixup relative urls we create a new equivalent `init` object instead
+						init = {
+							// the request body must be consumed in memory until browsers
+							// implement streaming request bodies and/or the body getter
+							body:
+								resource.method === 'GET' || resource.method === 'HEAD'
+									? undefined
+									: await resource.blob(),
+							cache: resource.cache,
+							credentials: resource.credentials,
+							headers: resource.headers,
+							integrity: resource.integrity,
+							keepalive: resource.keepalive,
+							method: resource.method,
+							mode: resource.mode,
+							redirect: resource.redirect,
+							referrer: resource.referrer,
+							referrerPolicy: resource.referrerPolicy,
+							signal: resource.signal,
+							...init
+						};
+					}
+
+					// we must fixup relative urls so they are resolved from the target page
+					const normalized = new URL(requested, url).href;
+					add_dependency(normalized);
+
+					// prerendered pages may be served from any origin, so `initial_fetch` urls shouldn't be normalized
+					return started ? native_fetch(normalized, init) : initial_fetch(requested, init);
 				},
 				status: status ?? null,
 				error: error ?? null
@@ -943,7 +1020,18 @@ function create_client({ target, session, base, trailing_slash }) {
 				});
 			}
 
-			const loaded = await module.load.call(null, load_input);
+			let loaded;
+
+			if (import.meta.env.DEV) {
+				try {
+					lock_fetch();
+					loaded = await module.load.call(null, load_input);
+				} finally {
+					unlock_fetch();
+				}
+			} else {
+				loaded = await module.load.call(null, load_input);
+			}
 
 			if (!loaded) {
 				throw new Error('load function must return a value');
@@ -1027,7 +1115,7 @@ function create_client({ target, session, base, trailing_slash }) {
 					const is_shadow_page = has_shadow && i === a.length - 1;
 
 					if (is_shadow_page) {
-						const res = await fetch(
+						const res = await native_fetch(
 							`${url.pathname}${url.pathname.endsWith('/') ? '' : '/'}__data.json${url.search}`,
 							{
 								headers: {
@@ -1280,18 +1368,22 @@ function create_client({ target, session, base, trailing_slash }) {
 			});
 		}
 
-		const completed = await update(normalized, redirect_chain, false, {
-			scroll,
-			keepfocus,
-			details
-		});
+		await update(
+			normalized,
+			redirect_chain,
+			false,
+			{
+				scroll,
+				keepfocus,
+				details
+			},
+			() => {
+				const navigation = { from, to: normalized };
+				callbacks.after_navigate.forEach((fn) => fn(navigation));
 
-		if (completed) {
-			const navigation = { from, to: normalized };
-			callbacks.after_navigate.forEach((fn) => fn(navigation));
-
-			stores.navigating.set(null);
-		}
+				stores.navigating.set(null);
+			}
+		);
 	}
 
 	/**
@@ -1303,6 +1395,12 @@ function create_client({ target, session, base, trailing_slash }) {
 	function native_navigation(url) {
 		location.href = url.href;
 		return new Promise(() => {});
+	}
+
+	if (import.meta.hot) {
+		import.meta.hot.on('vite:beforeUpdate', () => {
+			if (current.error) location.reload();
+		});
 	}
 
 	return {
@@ -1575,7 +1673,7 @@ function create_client({ target, session, base, trailing_slash }) {
 					}
 
 					const node = await load_node({
-						module: await nodes[i],
+						module: await components[nodes[i]](),
 						url,
 						params,
 						stuff,
@@ -1657,7 +1755,7 @@ function create_client({ target, session, base, trailing_slash }) {
  *   hydrate: {
  *     status: number;
  *     error: Error;
- *     nodes: Array<Promise<import('types').CSRComponent>>;
+ *     nodes: number[];
  *     params: Record<string, string>;
  *     routeId: string | null;
  *   };

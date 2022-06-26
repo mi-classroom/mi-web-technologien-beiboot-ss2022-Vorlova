@@ -24,7 +24,6 @@ export function override(settings) {
 export class Server {
 	constructor(manifest) {
 		this.options = {
-			amp: false,
 			csp: {"mode":"auto","directives":{"upgrade-insecure-requests":false,"block-all-mixed-content":false}},
 			dev: false,
 			floc: false,
@@ -47,8 +46,11 @@ export class Server {
 			manifest,
 			method_override: {"parameter":"_method","allowed":[]},
 			paths: { base, assets },
-			prefix: assets + '/_app/',
-			prerender: true,
+			prefix: assets + '/_app/immutable/',
+			prerender: {
+				default: true,
+				enabled: true
+			},
 			read,
 			root,
 			service_worker: null,

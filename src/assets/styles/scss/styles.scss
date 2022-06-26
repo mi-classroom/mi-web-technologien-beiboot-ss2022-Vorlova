@@ -1,34 +1,6 @@
 // Gallery
 .gallery {
-    list-style-type: none;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-
-    li {
-        div {
-            border: solid #222 2px;
-            width: 15rem;
-            overflow: hidden;
-            margin: 0 2em;
-            box-sizing: border-box;
-
-            img {
-                object-fit: cover;
-                height: 100%;
-            }
-        }
-
-        #image-frame {
-            text-align: center;
-            height: 20rem;
-        }
-        #image-data {
-            height: 7rem;
-            font-size: medium;
-            padding: 1em;
-            margin-bottom: 1rem;
-            overflow-y: scroll;
-        }
-    }
+    width: 99%;
+    height: 85%;
+    position: absolute;
 }
