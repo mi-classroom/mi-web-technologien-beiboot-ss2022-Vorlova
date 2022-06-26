@@ -4,6 +4,7 @@
   "scripts": {
 		"dev": "svelte-kit dev",
 		"build": "svelte-kit build",
+		"work-build": "NODE_OPTIONS='--es-module-specifier-resolution=node' npm run build",
 		"package": "svelte-kit package",
 		"preview": "svelte-kit preview",
 		"prepare": "svelte-kit sync",
