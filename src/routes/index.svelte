@@ -14,7 +14,13 @@
 
 	const imageBasicWidth = 20;
 	const imageBasicHeight = 40;
-	const imageBasicDepth = 1;
+	const basicDepth = 1;
+
+	const textPlaneBaseHeight = 20;
+	const textPlaneBaseWidth = 50;
+
+	const heightSpacer = 10;
+	const depthSpacer = 150;
 
 	// initial demo images
 	images.push({
@@ -40,15 +46,15 @@
 	let groundGeometry = new BoxGeometry( 5000, 0, 1024);
 
 	// image planes
-	let imageGeometry = new BoxGeometry( imageBasicWidth, imageBasicHeight, imageBasicDepth);
-	const defaultImagePosition: [number, number, number] = [-1000, 50, 15];
+	let imageGeometry = new BoxGeometry( imageBasicWidth, imageBasicHeight, basicDepth);
+	const defaultImagePosition: [number, number, number] = [-1000, imageBasicHeight/2 + textPlaneBaseHeight + 10, imageBasicWidth/2];
 	let imagePosition: [number, number, number] = defaultImagePosition.slice(); // slice is needed to assign the values not the array reference
 
 	const cameraPosition: [number, number, number] = [-1020, 50, 15];
 	
 	// Image Information Geometry
-	let textPlaneGeometry = new BoxGeometry( imageBasicWidth, imageBasicWidth, imageBasicDepth);
-	const defaultTextPlanePosition: [number, number, number] = [-1000, 50, 15];
+	let textPlaneGeometry = new BoxGeometry( textPlaneBaseWidth, textPlaneBaseHeight, basicDepth);
+	const defaultTextPlanePosition: [number, number, number] = [-1000, textPlaneBaseHeight/2 + 5, textPlaneBaseWidth/2];
 	let textPlanePosition: [number, number, number] = defaultTextPlanePosition.slice();
 
 	let allTextGeo: any[] = [];
@@ -65,7 +71,7 @@
 			height: 1,
 		} ));
 	}
-	let allTextPosition: [number, number, number] = [ textPlanePosition[0], textPlanePosition[1], textPlanePosition[2] ];
+	let allTextPosition: [number, number, number] = [ textPlanePosition[0], textPlanePosition[1] - 20, textPlanePosition[2] - textPlaneBaseWidth/2 ];
 
 	// Year 3d Texts
 	let yearGeometries: any[] = [];
@@ -101,13 +107,16 @@
     	});
 	}
 
-	const resetData = () => {
+	const resetImages = () => {
 		images = [];
+	}
+
+	const resetData = () => {
 		allTextGeo = [];
 
-		imagePosition = defaultImagePosition.slice();
+		imagePosition = [ defaultImagePosition[0], images[0].dimensions.height/2 + textPlaneBaseHeight/2 + 10, images[0].dimensions.width/2];
 		textPlanePosition = defaultTextPlanePosition.slice();
-		allTextPosition = [ textPlanePosition[0], textPlanePosition[1], textPlanePosition[2] ];
+		allTextPosition = [ textPlanePosition[0], textPlanePosition[1] - textPlaneBaseHeight/2, textPlanePosition[2]  - textPlaneBaseWidth/2 ];
 
 		yearGeometries = [];
 		years = [];
@@ -115,7 +124,7 @@
 	}
 
 	let handleSubmit = () => {
-		resetData();
+		resetImages();
 
 		handleJSON(files).then(
 			function(value) {
@@ -123,6 +132,7 @@
 				sortImages(extractedImages);
 				images = extractedImages;
 				materials = [];
+				resetData();
 			}
 		);
 	}
@@ -173,33 +183,53 @@
 					},
 				)
 			)}
+			<!-- IF different year, add image behind, else above -->
 			{#if years[index-1] != years[index] || years.length == 1}
-				{imagePosition[0]=imagePosition[0]+150}
-				{textPlanePosition[0]=textPlanePosition[0]+150}
-				{allTextPosition[0]=allTextPosition[0]+150}
+				{textPlanePosition[0] =
+					textPlanePosition[0] +
+					depthSpacer}
+				{allTextPosition[0] =
+					allTextPosition[0] +
+					depthSpacer}
+				{imagePosition[0] =
+					imagePosition[0] +
+					depthSpacer}
 
-				{imagePosition[1]=defaultImagePosition[1]}
-				{textPlanePosition[1]=defaultTextPlanePosition[1]}
-				{allTextPosition[1]=textPlanePosition[1]}
+				{textPlanePosition[1] =
+					defaultTextPlanePosition[1]}
+				{allTextPosition[1] =
+					textPlanePosition[1]}
+				{imagePosition[1] =
+					defaultImagePosition[1]}
+
 				<SC.Mesh
 					geometry={yearGeometries[index]}
 					material={lineMaterial}
 					position={yearPosition}
 					rotation={[0, Math.PI / -2, 0]}
 				/>
-				{yearPosition[0]=yearPosition[0]+150}
+				{yearPosition[0]=yearPosition[0]+ depthSpacer}
 			{:else}
-				{imagePosition[1]=imagePosition[1]+ item.dimensions.height + 50}
-				{textPlanePosition[1]=textPlanePosition[1]+ item.dimensions.height + 50}
-				{allTextPosition[1]=allTextPosition[1]+ item.dimensions.height + 50}
+				{textPlanePosition[1] = 
+					textPlanePosition[1] + 
+					item.dimensions.height/2 + 
+					images[index - 1].dimensions.height/2 + 
+					imageBasicWidth + 
+					heightSpacer}
+				{allTextPosition[1] =
+					allTextPosition[1] + 
+					item.dimensions.height/2 + 
+					images[index - 1].dimensions.height/2 + 
+					imageBasicWidth + 
+					heightSpacer}
+				{imagePosition[1] = 
+					imagePosition[1] + 
+					item.dimensions.height/2 + 
+					images[index - 1].dimensions.height/2 + 
+					imageBasicWidth + 
+					heightSpacer}
 			{/if}
-			<SC.Mesh
-				geometry={item.dimensions ? new BoxGeometry(item.dimensions.width, item.dimensions.height, imageBasicDepth) : imageGeometry}
-				material={materials[index]}
-				position={imagePosition}
-				rotation={[0, Math.PI / 2, 0]}
-				castShadow
-			/>
+
 			<SC.Mesh
 				geometry={textPlaneGeometry}
 				material={ new MeshBasicMaterial({ color: 0xFFFFFF }) }
@@ -216,6 +246,13 @@
 				rotation={[0, Math.PI / -2, 0]}
 			/>
 			<!-- END image infos -->
+			<SC.Mesh
+				geometry={item.dimensions ? new BoxGeometry(item.dimensions.width, item.dimensions.height, basicDepth) : imageGeometry}
+				material={materials[index]}
+				position={imagePosition}
+				rotation={[0, Math.PI / 2, 0]}
+				castShadow
+			/>
 		{/each}
 		</SC.Canvas>
 </div>
