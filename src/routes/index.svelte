@@ -16,7 +16,7 @@
 	const imageBasicHeight = 40;
 	const imageBasicDepth = 1;
 
-	// debug
+	// initial demo images
 	images.push({
 		src: 'https://cdn.pixabay.com/photo/2014/04/13/20/49/cat-323262_1280.jpg',
 		title: 'Title 1',
@@ -32,76 +32,40 @@
 
 	const loader = new TextureLoader();
 
-	// define timeline base
+	// timeline base
 	const lineMaterial = new LineBasicMaterial( { color: 0x222222 } );
 
-	// define ground plane for orientation
+	// ground plane for orientation
 	const groundMaterial = new MeshStandardMaterial({ color: 0xb4b4b4 });
 	let groundGeometry = new BoxGeometry( 5000, 0, 1024);
 
-	// define image planes
+	// image planes
 	let imageGeometry = new BoxGeometry( imageBasicWidth, imageBasicHeight, imageBasicDepth);
 	const defaultImagePosition: [number, number, number] = [-1000, 50, 15];
 	let imagePosition: [number, number, number] = defaultImagePosition.slice(); // slice is needed to assign the values not the array reference
 
 	const cameraPosition: [number, number, number] = [-1020, 50, 15];
+	
+	// Image Information Geometry
+	let textPlaneGeometry = new BoxGeometry( imageBasicWidth, imageBasicWidth, imageBasicDepth);
+	const defaultTextPlanePosition: [number, number, number] = [-1000, 50, 15];
+	let textPlanePosition: [number, number, number] = defaultTextPlanePosition.slice();
 
-	// Texts
-	let titleGeometries: any[] = [];
-	const generateTitle = (image: any) => {
-		const text: string = 'Title: ' + image.title;
-		titleGeometries.push( new TextGeometry( text, {
+	let allTextGeo: any[] = [];
+	const generateAllText = (image: any) => {
+		const text: string =
+			'Title: ' + image.title + 
+			'\nDate: ' + image.date +
+			'\nArtist: ' + image.artist +
+			'\nMedium: ' + image.medium +
+			'\nRepository: ' + image.repository;
+		allTextGeo.push( new TextGeometry( text, {
 			font: font,
 			size: 2,
 			height: 1,
 		} ));
 	}
-	let titlePosition: [number, number, number] = [ imagePosition[0], imagePosition[1], imagePosition[2] + 40 ];
-
-	let dateGeometries: any[] = [];
-	const generateDate = (image: any) => {
-		const text: string = 'Date: ' + image.date;
-		dateGeometries.push( new TextGeometry( text, {
-			font: font,
-			size: 2,
-			height: 1,
-		} ));
-	}
-	let datePosition: [number, number, number] = [ titlePosition[0], titlePosition[1] -5, titlePosition[2] ];
-
-	let artistGeometries: any[] = [];
-	const generateArtist = (image: any) => {
-		const text: string = 'Artist: ' + image.artist;
-		artistGeometries.push( new TextGeometry( text, {
-			font: font,
-			size: 2,
-			height: 1,
-		} ));
-	}
-	let artistPosition: [number, number, number] = [ datePosition[0], datePosition[1] - 5, datePosition[2] ];
-
-	let mediumGeometries: any[] = [];
-	const generateMedium = (image: any) => {
-		const text: string = 'Medium: ' + image.medium;
-		mediumGeometries.push( new TextGeometry( text, {
-			font: font,
-			size: 2,
-			height: 1,
-		} ));
-	}
-	let mediumPosition: [number, number, number] = [ artistPosition[0], artistPosition[1] - 5, artistPosition[2] ];
-
-	let repositoryGeometries: any[] = [];
-	const generateRepository = (image: any) => {
-		const text: string = 'Repository: ' + image.repository;
-		repositoryGeometries.push( new TextGeometry( text, {
-			font: font,
-			size: 2,
-			height: 1,
-		} ));
-	}
-	let repositoryPosition: [number, number, number] = [ mediumPosition[0], mediumPosition[1] - 5, mediumPosition[2] ];
-
+	let allTextPosition: [number, number, number] = [ textPlanePosition[0], textPlanePosition[1], textPlanePosition[2] ];
 
 	// Year 3d Texts
 	let yearGeometries: any[] = [];
@@ -139,19 +103,11 @@
 
 	const resetData = () => {
 		images = [];
-
-		titleGeometries = [];
-		dateGeometries = [];
-		artistGeometries = [];
-		mediumGeometries = [];
-		repositoryGeometries = [];
+		allTextGeo = [];
 
 		imagePosition = defaultImagePosition.slice();
-		titlePosition = [ imagePosition[0], imagePosition[1], imagePosition[2] + 40 ];
-		datePosition = [ titlePosition[0], titlePosition[1] - 5, titlePosition[2] ];
-		artistPosition = [ datePosition[0], datePosition[1] - 5, datePosition[2] ];
-		mediumPosition = [ artistPosition[0], artistPosition[1] - 5, artistPosition[2] ];
-		repositoryPosition = [ mediumPosition[0], mediumPosition[1] - 5, mediumPosition[2] ];
+		textPlanePosition = defaultTextPlanePosition.slice();
+		allTextPosition = [ textPlanePosition[0], textPlanePosition[1], textPlanePosition[2] ];
 
 		yearGeometries = [];
 		years = [];
@@ -219,18 +175,12 @@
 			)}
 			{#if years[index-1] != years[index] || years.length == 1}
 				{imagePosition[0]=imagePosition[0]+150}
-				{titlePosition[0]=titlePosition[0]+150}
-				{datePosition[0]=datePosition[0]+150}
-				{artistPosition[0]=artistPosition[0]+150}
-				{mediumPosition[0]=mediumPosition[0]+150}
-				{repositoryPosition[0]=repositoryPosition[0]+150}
+				{textPlanePosition[0]=textPlanePosition[0]+150}
+				{allTextPosition[0]=allTextPosition[0]+150}
 
 				{imagePosition[1]=defaultImagePosition[1]}
-				{titlePosition[1]=imagePosition[1] - 25}
-				{datePosition[1]=titlePosition[1] - 5}
-				{artistPosition[1]=datePosition[1] - 5}
-				{mediumPosition[1]=artistPosition[1] - 5}
-				{repositoryPosition[1]=mediumPosition[1] - 5}
+				{textPlanePosition[1]=defaultTextPlanePosition[1]}
+				{allTextPosition[1]=textPlanePosition[1]}
 				<SC.Mesh
 					geometry={yearGeometries[index]}
 					material={lineMaterial}
@@ -240,11 +190,8 @@
 				{yearPosition[0]=yearPosition[0]+150}
 			{:else}
 				{imagePosition[1]=imagePosition[1]+ item.dimensions.height + 50}
-				{titlePosition[1]=titlePosition[1]+ item.dimensions.height + 50}
-				{datePosition[1]=datePosition[1]+ item.dimensions.height + 50}
-				{artistPosition[1]=artistPosition[1]+ item.dimensions.height + 50}
-				{mediumPosition[1]=mediumPosition[1]+ item.dimensions.height + 50}
-				{repositoryPosition[1]=repositoryPosition[1]+ item.dimensions.height + 50}
+				{textPlanePosition[1]=textPlanePosition[1]+ item.dimensions.height + 50}
+				{allTextPosition[1]=allTextPosition[1]+ item.dimensions.height + 50}
 			{/if}
 			<SC.Mesh
 				geometry={item.dimensions ? new BoxGeometry(item.dimensions.width, item.dimensions.height, imageBasicDepth) : imageGeometry}
@@ -253,40 +200,19 @@
 				rotation={[0, Math.PI / 2, 0]}
 				castShadow
 			/>
+			<SC.Mesh
+				geometry={textPlaneGeometry}
+				material={ new MeshBasicMaterial({ color: 0xFFFFFF }) }
+				position={textPlanePosition}
+				rotation={[0, Math.PI / 2, 0]}
+				castShadow
+			/>
 			<!-- BEGIN Image Infos -->
-			{generateTitle(item)}
-			{generateArtist(item)}
-			{generateMedium(item)}
-			{generateRepository(item)}
-			{generateDate(item)}
+			{generateAllText(item)}
 			<SC.Mesh
-				geometry={titleGeometries[index]}
+				geometry={allTextGeo[index]}
 				material={lineMaterial}
-				position={titlePosition}
-				rotation={[0, Math.PI / -2, 0]}
-			/>
-			<SC.Mesh
-				geometry={dateGeometries[index]}
-				material={lineMaterial}
-				position={datePosition}
-				rotation={[0, Math.PI / -2, 0]}
-			/>
-			<SC.Mesh
-				geometry={artistGeometries[index]}
-				material={lineMaterial}
-				position={artistPosition}
-				rotation={[0, Math.PI / -2, 0]}
-			/>
-			<SC.Mesh
-				geometry={mediumGeometries[index]}
-				material={lineMaterial}
-				position={mediumPosition}
-				rotation={[0, Math.PI / -2, 0]}
-			/>
-			<SC.Mesh
-				geometry={repositoryGeometries[index]}
-				material={lineMaterial}
-				position={repositoryPosition}
+				position={allTextPosition}
 				rotation={[0, Math.PI / -2, 0]}
 			/>
 			<!-- END image infos -->
