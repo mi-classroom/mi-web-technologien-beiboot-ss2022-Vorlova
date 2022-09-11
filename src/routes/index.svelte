@@ -12,12 +12,12 @@
 	let itemYear: string[];
 	const font = new Font( OpenFont );
 
-	const imageBasicWidth = 20;
-	const imageBasicHeight = 40;
+	const imageBaseWidth = 20;
+	const imageBaseHeight = 40;
 	const basicDepth = 1;
 
 	const textPlaneBaseHeight = 20;
-	const textPlaneBaseWidth = 50;
+	const textPlaneBaseWidth = 70;
 
 	const heightSpacer = 10;
 	const depthSpacer = 150;
@@ -46,8 +46,8 @@
 	let groundGeometry = new BoxGeometry( 5000, 0, 1024);
 
 	// image planes
-	let imageGeometry = new BoxGeometry( imageBasicWidth, imageBasicHeight, basicDepth);
-	const defaultImagePosition: [number, number, number] = [-1000, imageBasicHeight/2 + textPlaneBaseHeight + 10, imageBasicWidth/2];
+	let imageGeometry = new BoxGeometry( imageBaseWidth, imageBaseHeight, basicDepth);
+	const defaultImagePosition: [number, number, number] = [-1000, imageBaseHeight/2 + textPlaneBaseHeight + 10, imageBaseWidth/2];
 	let imagePosition: [number, number, number] = defaultImagePosition.slice(); // slice is needed to assign the values not the array reference
 
 	const cameraPosition: [number, number, number] = [-1020, 50, 15];
@@ -71,7 +71,8 @@
 			height: 1,
 		} ));
 	}
-	let allTextPosition: [number, number, number] = [ textPlanePosition[0], textPlanePosition[1] - 20, textPlanePosition[2] - textPlaneBaseWidth/2 ];
+	const defaultAllTextPosition: [number, number, number] = [ defaultTextPlanePosition[0], defaultTextPlanePosition[1] + textPlaneBaseHeight/2 - 3, defaultTextPlanePosition[2] - textPlaneBaseWidth/2 + 1];
+	let allTextPosition: [number, number, number] = defaultAllTextPosition.slice();
 
 	// Year 3d Texts
 	let yearGeometries: any[] = [];
@@ -114,9 +115,9 @@
 	const resetData = () => {
 		allTextGeo = [];
 
-		imagePosition = [ defaultImagePosition[0], images[0].dimensions.height/2 + textPlaneBaseHeight/2 + 10, images[0].dimensions.width/2];
+		imagePosition = [ defaultImagePosition[0], (images[0].dimensions.height/2) + textPlaneBaseHeight + 10, images[0].dimensions.width/2];
 		textPlanePosition = defaultTextPlanePosition.slice();
-		allTextPosition = [ textPlanePosition[0], textPlanePosition[1] - textPlaneBaseHeight/2, textPlanePosition[2]  - textPlaneBaseWidth/2 ];
+		allTextPosition = defaultAllTextPosition.slice();
 
 		yearGeometries = [];
 		years = [];
@@ -198,9 +199,10 @@
 				{textPlanePosition[1] =
 					defaultTextPlanePosition[1]}
 				{allTextPosition[1] =
-					textPlanePosition[1]}
+					defaultAllTextPosition[1]}
 				{imagePosition[1] =
-					defaultImagePosition[1]}
+					item.dimensions ? (item.dimensions.height/2) + textPlaneBaseHeight + 10
+					: imageBaseHeight/2 + textPlaneBaseHeight + 10}
 
 				<SC.Mesh
 					geometry={yearGeometries[index]}
@@ -208,28 +210,27 @@
 					position={yearPosition}
 					rotation={[0, Math.PI / -2, 0]}
 				/>
-				{yearPosition[0]=yearPosition[0]+ depthSpacer}
+				{yearPosition[0] = yearPosition[0] + depthSpacer}
 			{:else}
-				{textPlanePosition[1] = 
-					textPlanePosition[1] + 
-					item.dimensions.height/2 + 
-					images[index - 1].dimensions.height/2 + 
-					imageBasicWidth + 
-					heightSpacer}
+				{textPlanePosition[1] =
+					textPlanePosition[1] +
+					images[index - 1].dimensions.height +
+					imageBaseWidth +
+					heightSpacer + 5}
 				{allTextPosition[1] =
 					allTextPosition[1] + 
-					item.dimensions.height/2 + 
-					images[index - 1].dimensions.height/2 + 
-					imageBasicWidth + 
-					heightSpacer}
+					images[index - 1].dimensions.height + 
+					imageBaseWidth + 
+					heightSpacer + 5}
 				{imagePosition[1] = 
 					imagePosition[1] + 
 					item.dimensions.height/2 + 
 					images[index - 1].dimensions.height/2 + 
-					imageBasicWidth + 
-					heightSpacer}
+					imageBaseWidth + // Text plane
+					heightSpacer + 5}
 			{/if}
 
+			<!-- BEGIN Image Infos -->
 			<SC.Mesh
 				geometry={textPlaneGeometry}
 				material={ new MeshBasicMaterial({ color: 0xFFFFFF }) }
@@ -237,7 +238,6 @@
 				rotation={[0, Math.PI / 2, 0]}
 				castShadow
 			/>
-			<!-- BEGIN Image Infos -->
 			{generateAllText(item)}
 			<SC.Mesh
 				geometry={allTextGeo[index]}
