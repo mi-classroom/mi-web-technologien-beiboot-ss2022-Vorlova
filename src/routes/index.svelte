@@ -78,14 +78,14 @@
 
 	// image planes
 	let imageGeometry = new BoxGeometry( imageBaseWidth, imageBaseHeight, basicDepth);
-	const defaultImagePosition: [number, number, number] = [-1000, imageBaseHeight/2 + textPlaneBaseHeight + 10, imageBaseWidth/2];
+	const defaultImagePosition: [number, number, number] = [-2000, imageBaseHeight/2 + textPlaneBaseHeight + 10, imageBaseWidth/2];
 	let imagePosition: [number, number, number] = defaultImagePosition.slice(); // slice is needed to assign the values not the array reference
 
-	const cameraPosition: [number, number, number] = [-1020, 50, 15];
+	const cameraPosition: [number, number, number] = [-2020, 50, 15];
 	
 	// Image Information Geometry
 	let textPlaneGeometry = new BoxGeometry( textPlaneBaseWidth, textPlaneBaseHeight, basicDepth);
-	const defaultTextPlanePosition: [number, number, number] = [-1000, textPlaneBaseHeight/2 + 5, textPlaneBaseWidth/2];
+	const defaultTextPlanePosition: [number, number, number] = [-2000, textPlaneBaseHeight/2 + 5, textPlaneBaseWidth/2];
 	let textPlanePosition: [number, number, number] = defaultTextPlanePosition.slice();
 
 	let allTextGeo: any[] = [];
