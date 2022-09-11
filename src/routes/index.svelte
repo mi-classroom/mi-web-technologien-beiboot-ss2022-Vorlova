@@ -12,6 +12,8 @@
 
 	let files: any;
 	let images: any[] = [];
+	let chronologicalImages: any[] = [];
+
 	let years: any[] = [];
 	let itemYear: string[];
 	const font = new Font( OpenFont );
@@ -143,7 +145,8 @@
 		images = [];
 	}
 
-	const resetData = () => {
+	const resetData = (images: any) => {
+		materials = [];
 		allTextGeo = [];
 
 		imagePosition = [ defaultImagePosition[0], (images[0].dimensions.height/2) + textPlaneBaseHeight + 10, images[0].dimensions.width/2];
@@ -161,10 +164,11 @@
 		handleJSON(files).then(
 			function(value) {
 				const extractedImages = extractImageItems(value, images);
-				sortImages(extractedImages);
 				images = extractedImages;
-				materials = [];
-				resetData();
+
+				chronologicalImages = images;
+				sortImages(chronologicalImages);
+				resetData(chronologicalImages);
 			}
 		);
 	}
@@ -206,89 +210,94 @@
 
 		<SC.Mesh geometry={groundGeometry} material={groundMaterial} position={[0, 0, 0]} receiveShadow/>
 
-		{#each images as item, index}
-			{loadImageTextures(item)}
-			{cleanUpYear(item.sortingPosition)}
-			{yearGeometries.push(
-				new TextGeometry(
-					years[index],
-					{
-						font: font,
-						size: 12,
-						height: 2,
-					},
-				)
-			)}
-			<!-- IF different year, add image behind, else above -->
-			{#if years[index-1] != years[index] || years.length == 1}
-				{textPlanePosition[0] =
-					textPlanePosition[0] +
-					depthSpacer}
-				{allTextPosition[0] =
-					allTextPosition[0] +
-					depthSpacer}
-				{imagePosition[0] =
-					imagePosition[0] +
-					depthSpacer}
+		{#if radioValue === "chronological"}
+			{#each chronologicalImages as item, index}
+				{loadImageTextures(item)}
+				{cleanUpYear(item.sortingPosition)}
 
-				{textPlanePosition[1] =
-					defaultTextPlanePosition[1]}
-				{allTextPosition[1] =
-					defaultAllTextPosition[1]}
-				{imagePosition[1] =
-					item.dimensions ? (item.dimensions.height/2) + textPlaneBaseHeight + 10
-					: imageBaseHeight/2 + textPlaneBaseHeight + 10}
+				{yearGeometries.push(
+					new TextGeometry(
+						years[index],
+						{
+							font: font,
+							size: 12,
+							height: 2,
+						},
+					)
+				)}
 
+				<!-- IF different year, add image behind, else above -->
+				{#if years[index-1] != years[index] || years.length == 1}
+
+					{textPlanePosition[0] =
+						textPlanePosition[0] +
+						depthSpacer}
+					{allTextPosition[0] =
+						allTextPosition[0] +
+						depthSpacer}
+					{imagePosition[0] =
+						imagePosition[0] +
+						depthSpacer}
+
+					{textPlanePosition[1] =
+						defaultTextPlanePosition[1]}
+					{allTextPosition[1] =
+						defaultAllTextPosition[1]}
+					{imagePosition[1] =
+						item.dimensions ? (item.dimensions.height/2) + textPlaneBaseHeight + 10
+						: imageBaseHeight/2 + textPlaneBaseHeight + 10}
+
+					<SC.Mesh
+						geometry={yearGeometries[index]}
+						material={lineMaterial}
+						position={yearPosition}
+						rotation={[0, Math.PI / -2, 0]}
+					/>
+					{yearPosition[0] = yearPosition[0] + depthSpacer}
+				{:else}
+					{textPlanePosition[1] =
+						textPlanePosition[1] +
+						chronologicalImages[index - 1].dimensions.height +
+						imageBaseWidth +
+						heightSpacer + 5}
+					{allTextPosition[1] =
+						allTextPosition[1] + 
+						chronologicalImages[index - 1].dimensions.height + 
+						imageBaseWidth + 
+						heightSpacer + 5}
+					{imagePosition[1] = 
+						imagePosition[1] + 
+						item.dimensions.height/2 + 
+						chronologicalImages[index - 1].dimensions.height/2 + 
+						imageBaseWidth + // Text plane
+						heightSpacer + 5}
+				{/if}
+
+				<!-- BEGIN Image Infos -->
 				<SC.Mesh
-					geometry={yearGeometries[index]}
+					geometry={textPlaneGeometry}
+					material={ new MeshBasicMaterial({ color: 0xFFFFFF }) }
+					position={textPlanePosition}
+					rotation={[0, Math.PI / 2, 0]}
+					castShadow
+				/>
+				{generateAllText(item)}
+				<SC.Mesh
+					geometry={allTextGeo[index]}
 					material={lineMaterial}
-					position={yearPosition}
+					position={allTextPosition}
 					rotation={[0, Math.PI / -2, 0]}
 				/>
-				{yearPosition[0] = yearPosition[0] + depthSpacer}
-			{:else}
-				{textPlanePosition[1] =
-					textPlanePosition[1] +
-					images[index - 1].dimensions.height +
-					imageBaseWidth +
-					heightSpacer + 5}
-				{allTextPosition[1] =
-					allTextPosition[1] + 
-					images[index - 1].dimensions.height + 
-					imageBaseWidth + 
-					heightSpacer + 5}
-				{imagePosition[1] = 
-					imagePosition[1] + 
-					item.dimensions.height/2 + 
-					images[index - 1].dimensions.height/2 + 
-					imageBaseWidth + // Text plane
-					heightSpacer + 5}
-			{/if}
-
-			<!-- BEGIN Image Infos -->
-			<SC.Mesh
-				geometry={textPlaneGeometry}
-				material={ new MeshBasicMaterial({ color: 0xFFFFFF }) }
-				position={textPlanePosition}
-				rotation={[0, Math.PI / 2, 0]}
-				castShadow
-			/>
-			{generateAllText(item)}
-			<SC.Mesh
-				geometry={allTextGeo[index]}
-				material={lineMaterial}
-				position={allTextPosition}
-				rotation={[0, Math.PI / -2, 0]}
-			/>
-			<!-- END image infos -->
-			<SC.Mesh
-				geometry={item.dimensions ? new BoxGeometry(item.dimensions.width, item.dimensions.height, basicDepth) : imageGeometry}
-				material={materials[index]}
-				position={imagePosition}
-				rotation={[0, Math.PI / 2, 0]}
-				castShadow
-			/>
-		{/each}
+				<!-- END image infos -->
+				<SC.Mesh
+					geometry={item.dimensions ? new BoxGeometry(item.dimensions.width, item.dimensions.height, basicDepth) : imageGeometry}
+					material={materials[index]}
+					position={imagePosition}
+					rotation={[0, Math.PI / 2, 0]}
+					castShadow
+				/>
+			{/each}
+		{/if}
 		</SC.Canvas>
 </div>
 
