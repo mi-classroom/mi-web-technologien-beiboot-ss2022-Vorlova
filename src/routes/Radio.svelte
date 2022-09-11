@@ -1,10 +1,10 @@
-<script>
+<script lang="ts">
     // based on suggestions from:
     // Sami Keijonen https://webdesign.tutsplus.com/tutorials/how-to-make-custom-accessible-checkboxes-and-radio-buttons--cms-32074
     // and Inclusive Components by Heydon Pickering https://inclusive-components.design/toggle-button/
   
-    export let options;
-    export let legend;
+    export let options: any;
+    export let legend: any;
     export let userSelected = options[0].value;
       export let fontSize = 16;
       export let flexDirection = 'column'
