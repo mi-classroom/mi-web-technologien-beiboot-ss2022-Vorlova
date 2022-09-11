@@ -22,6 +22,11 @@
 	const heightSpacer = 10;
 	const depthSpacer = 150;
 
+	let showRelated: boolean = false;
+	let showSimilar: boolean = false;
+	let showBelonging: boolean = false;
+	let showSameWork: boolean = false;
+
 	// initial demo images
 	images.push({
 		src: 'https://cdn.pixabay.com/photo/2014/04/13/20/49/cat-323262_1280.jpg',
@@ -159,6 +164,33 @@
 </form>
 
 <h1>Gallery:</h1>
+<div class="checkboxes">
+	<label>
+		<input
+			type="checkbox" bind:checked={showRelated}
+		/>
+		Show Related Content
+	</label>
+	<label>
+		<input
+			type="checkbox" bind:checked={showSimilar}
+		/>
+		Show Similar
+	</label>
+	<label>
+		<input
+			type="checkbox" bind:checked={showBelonging}
+		/>
+		Show Belongig
+	</label>
+	<label>
+		<input
+			type="checkbox" bind:checked={showSameWork}
+		/>
+		Show Same Work
+	</label>
+
+</div>
 <div class="gallery">
 	<SC.Canvas
 		antialias
@@ -254,6 +286,7 @@
 				castShadow
 			/>
 		{/each}
+		{console.log(showRelated)}
 		</SC.Canvas>
 </div>
 
