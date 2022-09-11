@@ -1,10 +1,14 @@
 <script lang="ts">
-	import { Font } from 'three/examples/jsm/loaders/FontLoader.js';
-	import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
-	import * as SC from 'svelte-cubed';
 	import { extractImageItems, handleJSON } from './file-actions';
+
 	import * as OpenFont from '../assets/fonts/Open_Sans_Regular.json';
+
 	import { BoxGeometry, Color, LineBasicMaterial, MeshBasicMaterial, MeshStandardMaterial, TextureLoader } from 'three';
+	import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
+	import { Font } from 'three/examples/jsm/loaders/FontLoader.js';
+
+	import Radio from './Radio.svelte';
+	import * as SC from 'svelte-cubed';
 
 	let files: any;
 	let images: any[] = [];
@@ -22,10 +26,24 @@
 	const heightSpacer = 10;
 	const depthSpacer = 150;
 
-	let showRelated: boolean = false;
-	let showSimilar: boolean = false;
-	let showBelonging: boolean = false;
-	let showSameWork: boolean = false;
+	let radioValue: string;
+	
+	const options = [{
+		value: 'chronological',
+		label: 'Show in chronological order',
+	}, {
+		value: 'showRelated',
+		label: 'Show Related Content',
+	}, {
+		value: 'showSimilar',
+		label: 'Show Similar',
+	}, {
+		value: 'showBelonging',
+		label: 'Show Belonging',
+	}, {
+		value: 'showSameWork',
+		label: 'Show Same Work',
+	}]
 
 	// initial demo images
 	images.push({
@@ -164,33 +182,10 @@
 </form>
 
 <h1>Gallery:</h1>
-<div class="checkboxes">
-	<label>
-		<input
-			type="checkbox" bind:checked={showRelated}
-		/>
-		Show Related Content
-	</label>
-	<label>
-		<input
-			type="checkbox" bind:checked={showSimilar}
-		/>
-		Show Similar
-	</label>
-	<label>
-		<input
-			type="checkbox" bind:checked={showBelonging}
-		/>
-		Show Belongig
-	</label>
-	<label>
-		<input
-			type="checkbox" bind:checked={showSameWork}
-		/>
-		Show Same Work
-	</label>
-
-</div>
+<Radio {options} fontSize={16} legend='Select a Display Mode' bind:userSelected={radioValue}/>
+<p>
+	{radioValue} is selected
+</p>
 <div class="gallery">
 	<SC.Canvas
 		antialias
@@ -286,7 +281,6 @@
 				castShadow
 			/>
 		{/each}
-		{console.log(showRelated)}
 		</SC.Canvas>
 </div>
 
