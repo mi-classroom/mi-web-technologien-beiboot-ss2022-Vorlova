@@ -50,13 +50,21 @@
 		src: 'https://cdn.pixabay.com/photo/2014/04/13/20/49/cat-323262_1280.jpg',
 		title: 'Title 1',
 		sortingPosition: '2022',
-		artist: 'Somebody'
+		artist: 'Somebody',
+		dimensions: {
+			height: 50,
+			width: 30,
+		},
 	},
 	{
 		src: 'https://images.pexels.com/photos/6447547/pexels-photo-6447547.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
 		title: 'Title 2',
 		sortingPosition: '2023-03',
-		artist: 'Photographer'
+		artist: 'Photographer',
+		dimensions: {
+			height: 60,
+			width: 30,
+		},
 	});
 
 	const loader = new TextureLoader();
