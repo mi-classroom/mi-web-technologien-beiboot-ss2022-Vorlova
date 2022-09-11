@@ -26,6 +26,8 @@ export const extractImageItems = (
                 sortingPosition: item.sortingNumber,
                 artist: item.involvedPersons[0].name,
                 dimensions,
+                inventoryNumber: item.inventoryNumber,
+                references: item.references,
             });
         }
     });
