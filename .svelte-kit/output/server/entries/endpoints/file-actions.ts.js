@@ -1,9 +1,31 @@
+import { resetData } from "./scene-creation.ts.js";
+import { imageCollections } from "./stores.ts.js";
+import "three";
+import "three/examples/jsm/geometries/TextGeometry";
+import "three/examples/jsm/loaders/FontLoader.js";
+import "../../chunks/index-abe1f00f.js";
+let years = [];
+const handleSubmit = (files) => {
+  handleJSON(files).then(function(value) {
+    const extractedImages = extractImageItems(value);
+    years = [];
+    const chronologicalImages = extractedImages;
+    sortImagesBySortingPosition(chronologicalImages);
+    imageCollections.chronologicalImages.set(chronologicalImages);
+    chronologicalImages.forEach((image) => {
+      years.push(cleanUpYear(image.sortingPosition));
+    });
+    resetData(chronologicalImages);
+    console.log("Done handling JSON");
+  });
+};
 const handleJSON = async (files) => {
   const text = await files[0].text();
   const jsonObj = JSON.parse(text);
   return jsonObj;
 };
-const extractImageItems = (jsonObj, images) => {
+const extractImageItems = (jsonObj) => {
+  const images = [];
   jsonObj.items.forEach((item) => {
     if (item.isBestOf == true) {
       const medium = removeBrackets(item.medium);
@@ -17,7 +39,9 @@ const extractImageItems = (jsonObj, images) => {
         repository: item.repository,
         sortingPosition: item.sortingNumber,
         artist: item.involvedPersons[0].name,
-        dimensions
+        dimensions,
+        inventoryNumber: item.inventoryNumber,
+        references: item.references
       });
     }
   });
@@ -32,4 +56,13 @@ const formatDimensions = (dimensions) => {
     "height": dimensions.height / 10
   };
 };
-export { extractImageItems, handleJSON };
+const sortImagesBySortingPosition = (images) => {
+  images.sort((a, b) => {
+    return a.sortingPosition.localeCompare(b.sortingPosition);
+  });
+};
+const cleanUpYear = (itemDate) => {
+  const itemYear = itemDate.split("-");
+  return itemYear[0];
+};
+export { handleSubmit, sortImagesBySortingPosition, years };
