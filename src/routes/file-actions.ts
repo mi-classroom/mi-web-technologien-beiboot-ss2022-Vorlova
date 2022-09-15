@@ -1,16 +1,45 @@
-export const handleJSON = async (files: [any]) => {
+import { loadImageTextures, resetData } from "./scene-creation";
+import { imageCollections } from "./stores";
+
+export let years: string[] = [];
+
+export const handleSubmit = (files: any) => {
+    handleJSON(files).then(
+        function(value) {
+            const extractedImages = extractImageItems(value);
+            years = [];
+            
+            // set up image collections
+            const chronologicalImages = extractedImages;
+            sortImagesBySortingPosition(chronologicalImages);
+            imageCollections.chronologicalImages.set(chronologicalImages);
+            chronologicalImages.forEach( (image) => {
+                years.push(
+                    cleanUpYear(
+                        image.sortingPosition
+                    )
+                )
+            })
+            resetData(chronologicalImages)
+            loadImageTextures(chronologicalImages)
+            console.log("Done handling JSON")
+        }
+    );
+}
+
+const handleJSON = async (files: [any]) => {
     const text = await files[0].text();
     const jsonObj = JSON.parse(text);
-
+    
     return jsonObj;
 }
 
-export const extractImageItems = (
+const extractImageItems = (
     jsonObj: {
         items: [any],
     },
-    images: any,
 ) => {
+    const images: any[] = [];
     jsonObj.items.forEach(item => {
         if(item.isBestOf == true) {
             const medium: string = removeBrackets(item.medium);
@@ -46,4 +75,15 @@ const formatDimensions = (dimensions: {
         'width': dimensions.width / 10,
         'height': dimensions.height / 10,
     }
+}
+
+export const sortImagesBySortingPosition = (images: any) => {
+    images.sort((a: any, b: any) => {
+        return a.sortingPosition.localeCompare(b.sortingPosition);
+    });
+}
+
+const cleanUpYear = (itemDate: string) => {
+    const itemYear = itemDate.split('-');
+    return itemYear[0];
 }

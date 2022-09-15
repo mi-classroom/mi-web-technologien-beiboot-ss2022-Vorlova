@@ -1,185 +1,104 @@
 <script lang="ts">
-	import { extractImageItems, handleJSON } from './file-actions';
+	import { handleSubmit, years } from './file-actions';
+	import { calculatePosition, generateAllText, generateYearGeometry, groundGeometry, groundMaterial, imageGeometry, lineMaterial, resetData, shiftYear, textPlaneGeometry } from './scene-creation';
+	import { allTextPosition as globalAllTextPosition, defaultCameraPosition, imageCollections, imagePosition as globalImagePosition, materials as globalMaterials, textPlanePosition as globalTextPlanePosition, yearGeometries as storedYearGeometries, yearPosition as globalYearPosition } from './stores';
 
-	import * as OpenFont from '../assets/fonts/Open_Sans_Regular.json';
+	import { BoxGeometry, Color, MeshBasicMaterial, TextureLoader } from 'three';
+	import type { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 
-	import { BoxGeometry, Color, LineBasicMaterial, MeshBasicMaterial, MeshStandardMaterial, TextureLoader } from 'three';
-	import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
-	import { Font } from 'three/examples/jsm/loaders/FontLoader.js';
-
-	import Radio from './Radio.svelte';
 	import * as SC from 'svelte-cubed';
+	import { onMount } from 'svelte';
+	import { get } from 'svelte/store';
 
-	let files: any;
-	let images: any[] = [];
-	let chronologicalImages: any[] = [];
+	let allTextPositionList: [number, number, number];
+	let allTextPosition: [number, number, number];
 
-	let years: any[] = [];
-	let itemYear: string[];
-	const font = new Font( OpenFont );
+	let imagePositionList: [number, number, number];
+	let imagePosition: [number, number, number];
 
-	const imageBaseWidth = 20;
-	const imageBaseHeight = 40;
-	const basicDepth = 1;
+	let textPlanePositionList: [number, number, number];
+	let textPlanePosition: [number, number, number];
 
-	const textPlaneBaseHeight = 20;
-	const textPlaneBaseWidth = 70;
+	let yearPositionList: [number, number, number][] = [];
+	let yearPosition: [number, number, number];
 
-	const heightSpacer = 10;
-	const depthSpacer = 150;
-
-	let radioValue: string;
-	
-	const options = [{
-		value: 'chronological',
-		label: 'Show in chronological order',
-	}, {
-		value: 'showRelated',
-		label: 'Show Related Content',
-	}, {
-		value: 'showSimilar',
-		label: 'Show Similar',
-	}, {
-		value: 'showBelonging',
-		label: 'Show Belonging',
-	}, {
-		value: 'showSameWork',
-		label: 'Show Same Work',
-	}]
-
-	// initial demo images
-	images.push({
-		src: 'https://cdn.pixabay.com/photo/2014/04/13/20/49/cat-323262_1280.jpg',
-		title: 'Title 1',
-		sortingPosition: '2022',
-		artist: 'Somebody',
-		dimensions: {
-			height: 50,
-			width: 30,
-		},
-	},
-	{
-		src: 'https://images.pexels.com/photos/6447547/pexels-photo-6447547.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-		title: 'Title 2',
-		sortingPosition: '2023-03',
-		artist: 'Photographer',
-		dimensions: {
-			height: 60,
-			width: 30,
-		},
-	});
-
-	const loader = new TextureLoader();
-
-	// timeline base
-	const lineMaterial = new LineBasicMaterial( { color: 0x222222 } );
-
-	// ground plane for orientation
-	const groundMaterial = new MeshStandardMaterial({ color: 0xb4b4b4 });
-	let groundGeometry = new BoxGeometry( 5000, 0, 1024);
-
-	// image planes
-	let imageGeometry = new BoxGeometry( imageBaseWidth, imageBaseHeight, basicDepth);
-	const defaultImagePosition: [number, number, number] = [-2000, imageBaseHeight/2 + textPlaneBaseHeight + 10, imageBaseWidth/2];
-	let imagePosition: [number, number, number] = defaultImagePosition.slice(); // slice is needed to assign the values not the array reference
-
-	const cameraPosition: [number, number, number] = [-2020, 50, 15];
-	
-	// Image Information Geometry
-	let textPlaneGeometry = new BoxGeometry( textPlaneBaseWidth, textPlaneBaseHeight, basicDepth);
-	const defaultTextPlanePosition: [number, number, number] = [-2000, textPlaneBaseHeight/2 + 5, textPlaneBaseWidth/2];
-	let textPlanePosition: [number, number, number] = defaultTextPlanePosition.slice();
-
-	let allTextGeo: any[] = [];
-	const generateAllText = (image: any) => {
-		const text: string =
-			'Title: ' + image.title + 
-			'\nDate: ' + image.date +
-			'\nArtist: ' + image.artist +
-			'\nMedium: ' + image.medium +
-			'\nRepository: ' + image.repository;
-		allTextGeo.push( new TextGeometry( text, {
-			font: font,
-			size: 2,
-			height: 1,
-		} ));
-	}
-	const defaultAllTextPosition: [number, number, number] = [ defaultTextPlanePosition[0], defaultTextPlanePosition[1] + textPlaneBaseHeight/2 - 3, defaultTextPlanePosition[2] - textPlaneBaseWidth/2 + 1];
-	let allTextPosition: [number, number, number] = defaultAllTextPosition.slice();
-
-	// Year 3d Texts
-	let yearGeometries: any[] = [];
-	let yearPosition: [number, number, number] = [ imagePosition[0], imagePosition[1], imagePosition[2] - 100 ];
-
+	let materialsList: any[] = [];
 	let materials: any[] = [];
-	// TODO: define image type
-	const loadImageTextures = (image: any) => {
-		
-        // replace url
-        let url = image.src;
-        let newUrl = url.replace( "imageserver-2022", "data-proxy/image.php?subpath=");
 
-		materials.push([
-			// right
-			new MeshBasicMaterial({ color: 0x000000 }),
-			// left
-			new MeshBasicMaterial({ color: 0x000000 }),
-			// top
-			new MeshBasicMaterial({ color: 0x000000 }),
-			// bottom
-			new MeshBasicMaterial({ color: 0x000000 }),
-			// back ?
-			new MeshBasicMaterial({ color: 0x000000 }),
-			// front ?
-			new MeshBasicMaterial({map: loader.load(newUrl)}),
-		]);
-	}
+	let yearGeometries: any[] = [];
+	let chronologicalImages: any[] = [];
+	let allTextGeo: TextGeometry;
+	let cameraPosition: any[] = defaultCameraPosition;
+	let files: any;
 
-	const sortImages = (images: any) => {
-    	images.sort((a: any, b: any) => {
-        	return a.sortingPosition.localeCompare(b.sortingPosition);
-    	});
-	}
-
-	const resetImages = () => {
-		images = [];
-	}
-
-	const resetData = (images: any) => {
-		materials = [];
-		allTextGeo = [];
-
-		imagePosition = [ defaultImagePosition[0], (images[0].dimensions.height/2) + textPlaneBaseHeight + 10, images[0].dimensions.width/2];
-		textPlanePosition = defaultTextPlanePosition.slice();
-		allTextPosition = defaultAllTextPosition.slice();
-
-		yearGeometries = [];
-		years = [];
-		yearPosition = [ imagePosition[0], imagePosition[1], imagePosition[2]- 100 ];
-	}
-
-	let handleSubmit = () => {
-		resetImages();
-
-		handleJSON(files).then(
-			function(value) {
-				const extractedImages = extractImageItems(value, images);
-				images = extractedImages;
-
-				chronologicalImages = images;
-				sortImages(chronologicalImages);
-				resetData(chronologicalImages);
+	const basicDepth = 1;
+	
+	let displayMode: string;
+	const displayBy = (tag?: string ) => {
+		switch (tag) {
+			case "RELATED_IN_CONTENT_TO": {
+				console.log("RELATED_IN_CONTENT_TO");
+				break;
 			}
-		);
+			case "SIMILAR_TO":{
+				console.log("SIMILAR_TO");
+				break;
+			}
+			case "BELONGS_TO":{
+				console.log("BELONGS_TO")
+				break;
+			}
+			case "PART_OF_SAME_WORK":{
+				console.log("PART_OF_SAME_WORK")
+				break;
+			}
+			default:{
+				console.log("SORTING_POSITION");
+				resetData(chronologicalImages);
+				displayMode = "chronological"
+			}
+		}
 	}
 
-	const cleanUpYear = (itemDate: string) => {
-		itemYear = itemDate.split('-');
-		years.push(itemYear[0])
-	}
+	// Subscribe to stores
+	globalAllTextPosition.subscribe(
+		value => {
+			allTextPosition = value;
+		}
+	)
+	imageCollections.chronologicalImages.subscribe(
+		value => {
+			chronologicalImages = value;
+		}
+	)
+	globalImagePosition.subscribe(
+		value => {
+			imagePosition = value;
+		}
+	)
+	globalTextPlanePosition.subscribe(
+		value => {
+			textPlanePosition = value;
+		}
+	)
+	globalYearPosition.subscribe(
+		value => {
+			yearPosition = value;
+		}
+	)
+	storedYearGeometries.subscribe(
+		value => {
+			yearGeometries = value;
+		}
+	)
+	globalMaterials.subscribe(
+		value => {
+			materials = value;
+		}
+	)
 </script>
 
-<form on:submit|preventDefault={handleSubmit}>
+<form on:submit|preventDefault={() => handleSubmit(files)}>
 	<!-- the `submit` event's default is prevented,
 	     so the page won't reload -->
 	<label for="source-file">Upload a JSON source for the images:</label>
@@ -194,10 +113,14 @@
 </form>
 
 <h1>Gallery:</h1>
-<Radio {options} fontSize={16} legend='Select a Display Mode' bind:userSelected={radioValue}/>
-<p>
-	{radioValue} is selected
-</p>
+<div>
+	<h2>Display Modes:</h2>
+	<button type="button" on:click={() => displayBy()}>Chronological</button>
+	<button type="button" on:click={() => displayBy("RELATED_IN_CONTENT_TO")}>Related in Content</button>
+	<button type="button" on:click={() => displayBy("SIMILAR_TO")}>Similar</button>
+	<button type="button" on:click={() => displayBy("BELONGS_TO")}>Belonging Together</button>
+	<button type="button" on:click={() => displayBy("PART_OF_WORK")}>Part of same work</button>
+</div>
 <div class="gallery">
 	<SC.Canvas
 		antialias
@@ -210,94 +133,65 @@
 
 		<SC.Mesh geometry={groundGeometry} material={groundMaterial} position={[0, 0, 0]} receiveShadow/>
 
-		{#if radioValue === "chronological"}
-			{#each chronologicalImages as item, index}
-				{loadImageTextures(item)}
-				{cleanUpYear(item.sortingPosition)}
+			{#if displayMode === "chronological"}
+				{#each chronologicalImages as item, index}
+					<!-- SET UP:  -->
+					{materialsList = [...materials]}
+					{console.log(
+						materialsList
+					)}
+					<!-- materialsList: [materials 0: [material, material, ...], materials 1: [...]] -->
 
-				{yearGeometries.push(
-					new TextGeometry(
-						years[index],
-						{
-							font: font,
-							size: 12,
-							height: 2,
-						},
-					)
-				)}
+					{yearGeometries.push(
+						generateYearGeometry(
+							years[index]
+						)
+					)}
 
-				<!-- IF different year, add image behind, else above -->
-				{#if years[index-1] != years[index] || years.length == 1}
-
-					{textPlanePosition[0] =
-						textPlanePosition[0] +
-						depthSpacer}
-					{allTextPosition[0] =
-						allTextPosition[0] +
-						depthSpacer}
-					{imagePosition[0] =
-						imagePosition[0] +
-						depthSpacer}
-
-					{textPlanePosition[1] =
-						defaultTextPlanePosition[1]}
-					{allTextPosition[1] =
-						defaultAllTextPosition[1]}
-					{imagePosition[1] =
-						item.dimensions ? (item.dimensions.height/2) + textPlaneBaseHeight + 10
-						: imageBaseHeight/2 + textPlaneBaseHeight + 10}
+					<!-- BEGIN Image Infos -->
+					{allTextGeo = generateAllText(item)}
+					{allTextPositionList = [...allTextPosition]}
+					{textPlanePositionList = [...textPlanePosition]}
+					{imagePositionList = [...imagePosition]}					
+					{yearPositionList.push([...yearPosition])}
 
 					<SC.Mesh
-						geometry={yearGeometries[index]}
+						geometry={textPlaneGeometry}
+						material={ new MeshBasicMaterial({ color: 0xFFFFFF }) }
+						position={textPlanePositionList}
+						rotation={[0, Math.PI / 2, 0]}
+						castShadow
+					/>
+					<SC.Mesh
+						geometry={allTextGeo}
 						material={lineMaterial}
-						position={yearPosition}
+						position={allTextPositionList}
 						rotation={[0, Math.PI / -2, 0]}
 					/>
-					{yearPosition[0] = yearPosition[0] + depthSpacer}
-				{:else}
-					{textPlanePosition[1] =
-						textPlanePosition[1] +
-						chronologicalImages[index - 1].dimensions.height +
-						imageBaseWidth +
-						heightSpacer + 5}
-					{allTextPosition[1] =
-						allTextPosition[1] + 
-						chronologicalImages[index - 1].dimensions.height + 
-						imageBaseWidth + 
-						heightSpacer + 5}
-					{imagePosition[1] = 
-						imagePosition[1] + 
-						item.dimensions.height/2 + 
-						chronologicalImages[index - 1].dimensions.height/2 + 
-						imageBaseWidth + // Text plane
-						heightSpacer + 5}
-				{/if}
-
-				<!-- BEGIN Image Infos -->
-				<SC.Mesh
-					geometry={textPlaneGeometry}
-					material={ new MeshBasicMaterial({ color: 0xFFFFFF }) }
-					position={textPlanePosition}
-					rotation={[0, Math.PI / 2, 0]}
-					castShadow
-				/>
-				{generateAllText(item)}
-				<SC.Mesh
-					geometry={allTextGeo[index]}
-					material={lineMaterial}
-					position={allTextPosition}
-					rotation={[0, Math.PI / -2, 0]}
-				/>
-				<!-- END image infos -->
-				<SC.Mesh
-					geometry={item.dimensions ? new BoxGeometry(item.dimensions.width, item.dimensions.height, basicDepth) : imageGeometry}
-					material={materials[index]}
-					position={imagePosition}
-					rotation={[0, Math.PI / 2, 0]}
-					castShadow
-				/>
-			{/each}
-		{/if}
+					<!-- END image infos -->
+					<SC.Mesh
+						geometry={item.dimensions ? new BoxGeometry(item.dimensions.width, item.dimensions.height, basicDepth) : imageGeometry}
+						material={materialsList[index]}
+						position={imagePositionList}
+						rotation={[0, Math.PI / 2, 0]}
+						castShadow
+					/>
+					<!-- IF different year, add image behind, else above -->
+					{#if years[index-1] != years[index] || years.length == 1}
+						{calculatePosition('back', chronologicalImages, item, index)}
+						<SC.Mesh
+							geometry={yearGeometries[index]}
+							material={lineMaterial}
+							position={yearPositionList[index]}
+							rotation={[0, Math.PI / -2, 0]}
+						/>
+						{shiftYear()}
+					{:else}
+						{calculatePosition('up', chronologicalImages, item, index)}
+					{/if}
+					{console.log("Loading " + index + "of " + chronologicalImages.length)}
+				{/each}
+			{/if}
 		</SC.Canvas>
 </div>
 
