@@ -1,14 +1,20 @@
 <script lang="ts">
 	import { handleSubmit, years } from './file-actions';
 	import { calculatePosition, generateAllText, generateYearGeometry, groundGeometry, groundMaterial, imageGeometry, lineMaterial, resetData, shiftYear, textPlaneGeometry } from './scene-creation';
-	import { allTextPosition as globalAllTextPosition, defaultCameraPosition, imageCollections, imagePosition as globalImagePosition, materials as globalMaterials, textPlanePosition as globalTextPlanePosition, yearGeometries as storedYearGeometries, yearPosition as globalYearPosition } from './stores';
+	import {
+		allTextPosition as globalAllTextPosition,
+		defaultCameraPosition, imageCollections,
+		imagePosition as globalImagePosition,
+		materials as globalMaterials,
+		textPlanePosition as globalTextPlanePosition,
+		yearGeometries as storedYearGeometries,
+		yearPosition as globalYearPosition,
+	} from './stores';
 
 	import { BoxGeometry, Color, MeshBasicMaterial, TextureLoader } from 'three';
 	import type { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 
 	import * as SC from 'svelte-cubed';
-	import { onMount } from 'svelte';
-	import { get } from 'svelte/store';
 
 	let allTextPositionList: [number, number, number];
 	let allTextPosition: [number, number, number];
@@ -23,7 +29,6 @@
 	let yearPosition: [number, number, number];
 
 	let materialsList: any[] = [];
-	let materials: any[] = [];
 
 	let yearGeometries: any[] = [];
 	let chronologicalImages: any[] = [];
@@ -91,11 +96,35 @@
 			yearGeometries = value;
 		}
 	)
-	globalMaterials.subscribe(
-		value => {
-			materials = value;
-		}
-	)
+
+	const loader = new TextureLoader();
+
+	const loadImageTextures = (images: any) => {
+		const imageMaterials: any[] = [];
+		images.forEach((image: any) => {
+			// replace url
+			const url = image.src;
+			const newUrl = url.replace( "imageserver-2022", "data-proxy/image.php?subpath=");
+
+			imageMaterials.push([
+				// right
+				new MeshBasicMaterial({ color: 0x000000 }),
+				// left
+				new MeshBasicMaterial({ color: 0x000000 }),
+				// top
+				new MeshBasicMaterial({ color: 0x000000 }),
+				// bottom
+				new MeshBasicMaterial({ color: 0x000000 }),
+				// back ?
+				new MeshBasicMaterial({ color: 0x000000 }),
+				// front ?
+				// new MeshBasicMaterial({ color: 0x000000 }),
+				new MeshBasicMaterial({map: loader.load(newUrl)}),
+			]);
+		});
+		console.log("Loaded Textures")
+		return imageMaterials;
+	}
 </script>
 
 <form on:submit|preventDefault={() => handleSubmit(files)}>
@@ -132,16 +161,11 @@
 		<SC.DirectionalLight intensity={0.6} position={[-2, 3, 2]} shadow={{ mapSize: [2048, 2048] }}/>
 
 		<SC.Mesh geometry={groundGeometry} material={groundMaterial} position={[0, 0, 0]} receiveShadow/>
-
+			{materialsList = loadImageTextures(chronologicalImages)}
+			{globalMaterials.set([...materialsList])}
 			{#if displayMode === "chronological"}
 				{#each chronologicalImages as item, index}
 					<!-- SET UP:  -->
-					{materialsList = [...materials]}
-					{console.log(
-						materialsList
-					)}
-					<!-- materialsList: [materials 0: [material, material, ...], materials 1: [...]] -->
-
 					{yearGeometries.push(
 						generateYearGeometry(
 							years[index]

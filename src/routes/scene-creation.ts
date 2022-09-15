@@ -1,6 +1,6 @@
 import * as OpenFont from '../assets/fonts/Open_Sans_Regular.json';
 
-import { BoxGeometry, LineBasicMaterial, MeshBasicMaterial, MeshStandardMaterial, TextureLoader } from 'three';
+import { BoxGeometry, LineBasicMaterial, MeshStandardMaterial } from 'three';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 import { Font } from 'three/examples/jsm/loaders/FontLoader.js';
 import {
@@ -19,8 +19,6 @@ import {
     yearGeometries,
     yearPosition as globalYearPosition,
 } from './stores';
-import { set_store_value } from 'svelte/internal';
-import { getStores } from '$app/stores';
 
 const font = new Font( OpenFont );
 
@@ -33,39 +31,10 @@ const basicDepth = 1;
 
 const heightSpacer = 10;
 const depthSpacer = 150;
-const loader = new TextureLoader();
 
 // Materials
 export const lineMaterial = new LineBasicMaterial( { color: 0x222222 } );
 export const groundMaterial = new MeshStandardMaterial({ color: 0xb4b4b4 });
-
-export const loadImageTextures = (images: any) => {
-    const imageMaterials: any[] = [];
-    images.forEach((image: any) => {
-        // replace url
-        const url = image.src;
-        const newUrl = url.replace( "imageserver-2022", "data-proxy/image.php?subpath=");
-
-        imageMaterials.push([
-            // right
-            new MeshBasicMaterial({ color: 0x000000 }),
-            // left
-            new MeshBasicMaterial({ color: 0x000000 }),
-            // top
-            new MeshBasicMaterial({ color: 0x000000 }),
-            // bottom
-            new MeshBasicMaterial({ color: 0x000000 }),
-            // back ?
-            new MeshBasicMaterial({ color: 0x000000 }),
-            // front ?
-            // new MeshBasicMaterial({ color: 0x000000 }),
-            new MeshBasicMaterial({map: loader.load(newUrl)}),
-        ]);
-    });
-    console.log(imageMaterials)
-    globalMaterials.set(imageMaterials);
-    console.log("Loaded Textures")
-}
 
 // Geometries
 export const groundGeometry = new BoxGeometry( 5000, 0, 1024);

@@ -1,4 +1,4 @@
-import { loadImageTextures, resetData } from "./scene-creation";
+import { resetData } from "./scene-creation";
 import { imageCollections } from "./stores";
 
 export let years: string[] = [];
@@ -21,7 +21,6 @@ export const handleSubmit = (files: any) => {
                 )
             })
             resetData(chronologicalImages)
-            loadImageTextures(chronologicalImages)
             console.log("Done handling JSON")
         }
     );
