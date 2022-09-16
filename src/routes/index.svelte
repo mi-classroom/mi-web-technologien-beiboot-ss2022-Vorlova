@@ -3,7 +3,9 @@
 	import { calculatePosition, generateAllText, generateYearGeometry, groundGeometry, groundMaterial, imageGeometry, lineMaterial, resetData, shiftYear, textPlaneGeometry } from './scene-creation';
 	import {
 		allTextPosition as globalAllTextPosition,
-		defaultCameraPosition, imageCollections,
+		defaultCameraPosition,
+		defaultImagePosition,
+		imageCollections,
 		imagePosition as globalImagePosition,
 		materials as globalMaterials,
 		textPlanePosition as globalTextPlanePosition,
@@ -145,78 +147,92 @@
 <div>
 	<h2>Display Modes:</h2>
 	<button type="button" on:click={() => displayBy()}>Chronological</button>
-	<button type="button" on:click={() => displayBy("RELATED_IN_CONTENT_TO")}>Related in Content</button>
+	<!-- <button type="button" on:click={() => displayBy("RELATED_IN_CONTENT_TO")}>Related in Content</button>
 	<button type="button" on:click={() => displayBy("SIMILAR_TO")}>Similar</button>
 	<button type="button" on:click={() => displayBy("BELONGS_TO")}>Belonging Together</button>
-	<button type="button" on:click={() => displayBy("PART_OF_WORK")}>Part of same work</button>
+	<button type="button" on:click={() => displayBy("PART_OF_WORK")}>Part of same work</button> -->
 </div>
+<div>
+	<button type="button" on:click={() => {cameraPosition = defaultCameraPosition}}>Reset Camera to Start</button>
+</div>
+
 <div class="gallery">
 	<SC.Canvas
 		antialias
 		background={new Color(180, 180, 180)}
+		shadows
 	>
-		<SC.PerspectiveCamera position={cameraPosition} target={ [10, 25, 0] }/>
-		<SC.OrbitControls enableZoom={true} enableRotate={true}/>
+		<SC.PerspectiveCamera
+			position={cameraPosition}
+			target={ defaultImagePosition }
+		/>
+		<SC.OrbitControls enableZoom={true} enableRotate={true} maxPolarAngle={Math.PI * 0.51}/>
 		<SC.AmbientLight intensity={1} />
 		<SC.DirectionalLight intensity={0.6} position={[-2, 3, 2]} shadow={{ mapSize: [2048, 2048] }}/>
 
-		<SC.Mesh geometry={groundGeometry} material={groundMaterial} position={[0, 0, 0]} receiveShadow/>
-			{materialsList = loadImageTextures(chronologicalImages)}
-			{globalMaterials.set([...materialsList])}
-			{#if displayMode === "chronological"}
-				{#each chronologicalImages as item, index}
-					<!-- SET UP:  -->
-					{yearGeometries.push(
-						generateYearGeometry(
-							years[index]
-						)
-					)}
+		<SC.Mesh
+			geometry={groundGeometry}
+			material={groundMaterial}
+			position={[0, 0, 500]}
+			receiveShadow
+		/>
+			
+		{materialsList = loadImageTextures(chronologicalImages)}
+		{globalMaterials.set([...materialsList])}
+		{#if displayMode === "chronological"}
+			{#each chronologicalImages as item, index}
+				<!-- SET UP:  -->
+				{yearGeometries.push(
+					generateYearGeometry(
+						years[index]
+					)
+				)}
 
-					<!-- BEGIN Image Infos -->
-					{allTextGeo = generateAllText(item)}
-					{allTextPositionList = [...allTextPosition]}
-					{textPlanePositionList = [...textPlanePosition]}
-					{imagePositionList = [...imagePosition]}					
-					{yearPositionList.push([...yearPosition])}
+				<!-- BEGIN Image Infos -->
+				{allTextGeo = generateAllText(item)}
+				{allTextPositionList = [...allTextPosition]}
+				{textPlanePositionList = [...textPlanePosition]}
+				{imagePositionList = [...imagePosition]}					
+				{yearPositionList.push([...yearPosition])}
 
+				<SC.Mesh
+					geometry={textPlaneGeometry}
+					material={ new MeshBasicMaterial({ color: 0xFFFFFF }) }
+					position={textPlanePositionList}
+					rotation={[0, Math.PI / 2, 0]}
+					castShadow
+				/>
+				<SC.Mesh
+					geometry={allTextGeo}
+					material={lineMaterial}
+					position={allTextPositionList}
+					rotation={[0, Math.PI / -2, 0]}
+				/>
+				<!-- END image infos -->
+				<SC.Mesh
+					geometry={item.dimensions ? new BoxGeometry(item.dimensions.width, item.dimensions.height, basicDepth) : imageGeometry}
+					material={materialsList[index]}
+					position={imagePositionList}
+					rotation={[0, Math.PI / 2, 0]}
+					castShadow
+				/>
+				<!-- IF different year, add image behind, else above -->
+				{#if years[index-1] != years[index] || years.length == 1}
+					{calculatePosition('back', chronologicalImages, item, index)}
 					<SC.Mesh
-						geometry={textPlaneGeometry}
-						material={ new MeshBasicMaterial({ color: 0xFFFFFF }) }
-						position={textPlanePositionList}
-						rotation={[0, Math.PI / 2, 0]}
-						castShadow
-					/>
-					<SC.Mesh
-						geometry={allTextGeo}
+						geometry={yearGeometries[index]}
 						material={lineMaterial}
-						position={allTextPositionList}
+						position={yearPositionList[index]}
 						rotation={[0, Math.PI / -2, 0]}
 					/>
-					<!-- END image infos -->
-					<SC.Mesh
-						geometry={item.dimensions ? new BoxGeometry(item.dimensions.width, item.dimensions.height, basicDepth) : imageGeometry}
-						material={materialsList[index]}
-						position={imagePositionList}
-						rotation={[0, Math.PI / 2, 0]}
-						castShadow
-					/>
-					<!-- IF different year, add image behind, else above -->
-					{#if years[index-1] != years[index] || years.length == 1}
-						{calculatePosition('back', chronologicalImages, item, index)}
-						<SC.Mesh
-							geometry={yearGeometries[index]}
-							material={lineMaterial}
-							position={yearPositionList[index]}
-							rotation={[0, Math.PI / -2, 0]}
-						/>
-						{shiftYear()}
-					{:else}
-						{calculatePosition('up', chronologicalImages, item, index)}
-					{/if}
-					{console.log("Loading " + index + "of " + chronologicalImages.length)}
-				{/each}
-			{/if}
-		</SC.Canvas>
+					{shiftYear()}
+				{:else}
+					{calculatePosition('side', chronologicalImages, item, index)}
+				{/if}
+				{console.log("Loading " + index + "of " + chronologicalImages.length)}
+			{/each}
+		{/if}
+	</SC.Canvas>
 </div>
 
 <style lang="scss" src="../assets/styles/scss/styles.scss"></style>

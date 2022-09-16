@@ -17,7 +17,7 @@ export const yearGeometries = writable([]);
 export const allTextGeo = writable([]);
 
 // Geometry default Positions
-export const defaultCameraPosition: [number, number, number] = [-2050, 50, 15];
+export const defaultCameraPosition: [number, number, number] = [-2300, 50, 15];
 export const defaultImagePosition: [number, number, number] = [-2000, imageBaseHeight/2 + textPlaneBaseHeight + 10, imageBaseWidth/2];
 export const defaultTextPlanePosition: [number, number, number] = [-2000, textPlaneBaseHeight/2 + 5, textPlaneBaseWidth/2];
 export const defaultAllTextPosition: [number, number, number] = [ defaultTextPlanePosition[0], defaultTextPlanePosition[1] + textPlaneBaseHeight/2 - 3, defaultTextPlanePosition[2] - textPlaneBaseWidth/2 + 1];

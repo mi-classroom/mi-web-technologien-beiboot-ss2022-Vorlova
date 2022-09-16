@@ -29,15 +29,15 @@ let yearPosition: [number, number, number];
 
 const basicDepth = 1;
 
-const heightSpacer = 10;
-const depthSpacer = 150;
+const heightSpacer = 20;
+const depthSpacer = 200;
 
 // Materials
 export const lineMaterial = new LineBasicMaterial( { color: 0x222222 } );
 export const groundMaterial = new MeshStandardMaterial({ color: 0xb4b4b4 });
 
 // Geometries
-export const groundGeometry = new BoxGeometry( 5000, 0, 1024);
+export const groundGeometry = new BoxGeometry( 5000, 0, 2048);
 export const imageGeometry = new BoxGeometry( imageBaseWidth, imageBaseHeight, basicDepth);
 export const textPlaneGeometry = new BoxGeometry( textPlaneBaseWidth, textPlaneBaseHeight, basicDepth);
 
@@ -107,6 +107,12 @@ export const calculatePosition = (
                 item.dimensions.height/2 + textPlaneBaseHeight + 10 :
                 imageBaseHeight/2 + textPlaneBaseHeight + 10;
 
+            textPlanePosition[2] = defaultTextPlanePosition[2]
+            allTextPosition[2] = defaultAllTextPosition[2]
+            imagePosition[2] = item.dimensions ?
+                item.dimensions.width/2 :
+                defaultImagePosition[2]
+
             globalTextPlanePosition.set(textPlanePosition);
             globalAllTextPosition.set(allTextPosition);
             globalImagePosition.set(imagePosition);
@@ -114,11 +120,24 @@ export const calculatePosition = (
         }
         case 'up': {
             textPlanePosition[1] =
-            textPlanePosition[1] + images[index - 1].dimensions.height + imageBaseWidth + heightSpacer + 5;
+            textPlanePosition[1] + images[index - 1].dimensions.height + textPlaneBaseHeight + heightSpacer + 5;
             allTextPosition[1] =
-                allTextPosition[1] +  images[index - 1].dimensions.height + imageBaseWidth + heightSpacer + 5;
+                allTextPosition[1] +  images[index - 1].dimensions.height + textPlaneBaseHeight + heightSpacer + 5;
             imagePosition[1] = 
-                imagePosition[1] + item.dimensions.height/2 + images[index - 1].dimensions.height/2 + imageBaseWidth + heightSpacer + 5;
+                imagePosition[1] + item.dimensions.height/2 + images[index - 1].dimensions.height/2 + textPlaneBaseHeight + heightSpacer + 5;
+            
+            globalTextPlanePosition.set(textPlanePosition);
+            globalAllTextPosition.set(allTextPosition);
+            globalImagePosition.set(imagePosition);
+            break;
+        }
+        case 'side': {
+            textPlanePosition[2] =
+            textPlanePosition[2] + images[index - 1].dimensions.width + textPlaneBaseHeight + heightSpacer *2;
+            allTextPosition[2] =
+                allTextPosition[2] +  images[index - 1].dimensions.width + textPlaneBaseHeight + heightSpacer *2;
+            imagePosition[2] = 
+                imagePosition[2] + item.dimensions.width/2 + images[index - 1].dimensions.width/2 + textPlaneBaseHeight + heightSpacer *2;
             
             globalTextPlanePosition.set(textPlanePosition);
             globalAllTextPosition.set(allTextPosition);
