@@ -225,15 +225,16 @@
 
 			<!-- Display Related Images -->
 			{#if relatedImages && relatedImages.length > 0}
+				{relatedImagePosition = [...imagePositionList[index]]}
 				{#each relatedImages as relatedItem, rIndex}
-					{relatedImagePosition = calculatePositionUp([...imagePositionList[index]], item, relatedImages, relatedItem, rIndex)}
+					{relatedImagePosition = calculatePositionUp(relatedImagePosition, item, relatedImages, relatedItem, rIndex)}
 					{relatedImagePositionList.push([...relatedImagePosition])}
 					<SC.Mesh
 						geometry={
 							relatedItem.dimensions ?
 							new BoxGeometry(
-								relatedItem.dimensions.width,
-								relatedItem.dimensions.height,
+								relatedItem.dimensions.width /2,
+								relatedItem.dimensions.height /2,
 								basicDepth,
 							) :
 							imageGeometry

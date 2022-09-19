@@ -30,7 +30,7 @@ let yearPosition: [number, number, number];
 const basicDepth = 1;
 
 const heightSpacer = 20;
-const depthSpacer = 200;
+const depthSpacer = 300;
 
 // Materials
 export const lineMaterial = new LineBasicMaterial( { color: 0x222222 } );
@@ -151,33 +151,11 @@ export const calculatePositionUp = (
     item: any,
     index: number,
 ) => {
-    // globalTextPlanePosition.subscribe(
-    //     value => {
-    //         textPlanePosition = value;
-    //     }
-    // )
-    // globalAllTextPosition.subscribe(
-    //     value => {
-    //         allTextPosition = value;
-    //     }
-    // )
-
-    // textPlanePosition[1] =
-    //     images[index-1] ?
-    //     textPlanePosition[1] + images[index - 1].dimensions.height + textPlaneBaseHeight + heightSpacer + 5 :
-    //     textPlanePosition[1] + imageBefore.dimensions.height + textPlaneBaseHeight + heightSpacer + 5;
-
-    // allTextPosition[1] =
-    //     images[index-1] ?
-    //     allTextPosition[1] +  images[index - 1].dimensions.height + textPlaneBaseHeight + heightSpacer + 5 :
-    //     allTextPosition[1] +  imageBefore.dimensions.height + textPlaneBaseHeight + heightSpacer + 5;
 
     position[1] = 
         images[index-1] ?
         position[1] + item.dimensions.height/2 + images[index - 1].dimensions.height/2 + textPlaneBaseHeight + heightSpacer + 5 :
         position[1] + item.dimensions.height/2 + imageBefore.dimensions.height/2 + textPlaneBaseHeight + heightSpacer + 5;
 
-    // globalAllTextPosition.set(allTextPosition);
-    // globalTextPlanePosition.set(textPlanePosition);
     return position
 }
