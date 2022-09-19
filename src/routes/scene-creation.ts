@@ -118,19 +118,6 @@ export const calculatePosition = (
             globalImagePosition.set(imagePosition);
             break;
         }
-        case 'up': {
-            textPlanePosition[1] =
-            textPlanePosition[1] + images[index - 1].dimensions.height + textPlaneBaseHeight + heightSpacer + 5;
-            allTextPosition[1] =
-                allTextPosition[1] +  images[index - 1].dimensions.height + textPlaneBaseHeight + heightSpacer + 5;
-            imagePosition[1] = 
-                imagePosition[1] + item.dimensions.height/2 + images[index - 1].dimensions.height/2 + textPlaneBaseHeight + heightSpacer + 5;
-            
-            globalTextPlanePosition.set(textPlanePosition);
-            globalAllTextPosition.set(allTextPosition);
-            globalImagePosition.set(imagePosition);
-            break;
-        }
         case 'side': {
             textPlanePosition[2] =
             textPlanePosition[2] + images[index - 1].dimensions.width + textPlaneBaseHeight + heightSpacer *2;
@@ -154,5 +141,43 @@ export const shiftYear = () => {
         }
     )
     yearPosition[0] = yearPosition[0] + depthSpacer;
-    globalYearPosition.set(yearPosition);
+    globalYearPosition.set([...yearPosition]);
+}
+
+export const calculatePositionUp = (
+    position: any[],
+    imageBefore: any,
+    images: any,
+    item: any,
+    index: number,
+) => {
+    // globalTextPlanePosition.subscribe(
+    //     value => {
+    //         textPlanePosition = value;
+    //     }
+    // )
+    // globalAllTextPosition.subscribe(
+    //     value => {
+    //         allTextPosition = value;
+    //     }
+    // )
+
+    // textPlanePosition[1] =
+    //     images[index-1] ?
+    //     textPlanePosition[1] + images[index - 1].dimensions.height + textPlaneBaseHeight + heightSpacer + 5 :
+    //     textPlanePosition[1] + imageBefore.dimensions.height + textPlaneBaseHeight + heightSpacer + 5;
+
+    // allTextPosition[1] =
+    //     images[index-1] ?
+    //     allTextPosition[1] +  images[index - 1].dimensions.height + textPlaneBaseHeight + heightSpacer + 5 :
+    //     allTextPosition[1] +  imageBefore.dimensions.height + textPlaneBaseHeight + heightSpacer + 5;
+
+    position[1] = 
+        images[index-1] ?
+        position[1] + item.dimensions.height/2 + images[index - 1].dimensions.height/2 + textPlaneBaseHeight + heightSpacer + 5 :
+        position[1] + item.dimensions.height/2 + imageBefore.dimensions.height/2 + textPlaneBaseHeight + heightSpacer + 5;
+
+    // globalAllTextPosition.set(allTextPosition);
+    // globalTextPlanePosition.set(textPlanePosition);
+    return position
 }

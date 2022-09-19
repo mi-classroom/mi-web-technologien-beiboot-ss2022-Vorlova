@@ -1,12 +1,23 @@
 <script lang="ts">
 	import { handleSubmit, years } from './file-actions';
-	import { calculatePosition, generateAllText, generateYearGeometry, groundGeometry, groundMaterial, imageGeometry, lineMaterial, resetData, shiftYear, textPlaneGeometry } from './scene-creation';
+	import {
+		calculatePosition,
+		calculatePositionUp,
+		generateAllText,
+		generateYearGeometry,
+		groundGeometry,
+		groundMaterial,
+		imageGeometry,
+		lineMaterial,
+		shiftYear,
+		textPlaneGeometry } from './scene-creation';
 	import {
 		allTextPosition as globalAllTextPosition,
 		defaultCameraPosition,
 		defaultImagePosition,
 		imageCollections,
 		imagePosition as globalImagePosition,
+		relatedImagePosition as globalRelatedImagePosition,
 		materials as globalMaterials,
 		textPlanePosition as globalTextPlanePosition,
 		yearGeometries as storedYearGeometries,
@@ -17,70 +28,54 @@
 	import type { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 
 	import * as SC from 'svelte-cubed';
+	import { filterRelated } from './image-filters';
 
-	let allTextPositionList: [number, number, number];
+	let allTextPositionList: [number, number, number][] = [];
 	let allTextPosition: [number, number, number];
 
-	let imagePositionList: [number, number, number];
+	let imagePositionList: [number, number, number][] = [];
 	let imagePosition: [number, number, number];
+	
+	let relatedImagePositionList: [number, number, number][] = [];
+	let relatedImagePosition: [number, number, number];
 
-	let textPlanePositionList: [number, number, number];
+	let textPlanePositionList: [number, number, number][] = [];
 	let textPlanePosition: [number, number, number];
 
 	let yearPositionList: [number, number, number][] = [];
 	let yearPosition: [number, number, number];
 
-	let materialsList: any[] = [];
+	let materialsListChronological: any[] = [];
+	let materialsListRelated: any[] = [];
 
 	let yearGeometries: any[] = [];
 	let chronologicalImages: any[] = [];
 	let allTextGeo: TextGeometry;
 	let cameraPosition: any[] = defaultCameraPosition;
 	let files: any;
+	let relatedImages: any[]
 
 	const basicDepth = 1;
-	
-	let displayMode: string;
-	const displayBy = (tag?: string ) => {
-		switch (tag) {
-			case "RELATED_IN_CONTENT_TO": {
-				console.log("RELATED_IN_CONTENT_TO");
-				break;
-			}
-			case "SIMILAR_TO":{
-				console.log("SIMILAR_TO");
-				break;
-			}
-			case "BELONGS_TO":{
-				console.log("BELONGS_TO")
-				break;
-			}
-			case "PART_OF_SAME_WORK":{
-				console.log("PART_OF_SAME_WORK")
-				break;
-			}
-			default:{
-				console.log("SORTING_POSITION");
-				resetData(chronologicalImages);
-				displayMode = "chronological"
-			}
-		}
-	}
 
 	// Subscribe to stores
-	globalAllTextPosition.subscribe(
-		value => {
-			allTextPosition = value;
-		}
-	)
 	imageCollections.chronologicalImages.subscribe(
 		value => {
 			chronologicalImages = value;
 		}
 	)
+	globalAllTextPosition.subscribe(
+		value => {
+			allTextPosition = value;
+		}
+	)
 	globalImagePosition.subscribe(
 		value => {
 			imagePosition = value;
+		}
+	)
+	globalRelatedImagePosition.subscribe(
+		value => {
+			relatedImagePosition = value;
 		}
 	)
 	globalTextPlanePosition.subscribe(
@@ -100,7 +95,6 @@
 	)
 
 	const loader = new TextureLoader();
-
 	const loadImageTextures = (images: any) => {
 		const imageMaterials: any[] = [];
 		images.forEach((image: any) => {
@@ -124,7 +118,6 @@
 				new MeshBasicMaterial({map: loader.load(newUrl)}),
 			]);
 		});
-		console.log("Loaded Textures")
 		return imageMaterials;
 	}
 </script>
@@ -144,14 +137,6 @@
 </form>
 
 <h1>Gallery:</h1>
-<div>
-	<h2>Display Modes:</h2>
-	<button type="button" on:click={() => displayBy()}>Chronological</button>
-	<!-- <button type="button" on:click={() => displayBy("RELATED_IN_CONTENT_TO")}>Related in Content</button>
-	<button type="button" on:click={() => displayBy("SIMILAR_TO")}>Similar</button>
-	<button type="button" on:click={() => displayBy("BELONGS_TO")}>Belonging Together</button>
-	<button type="button" on:click={() => displayBy("PART_OF_WORK")}>Part of same work</button> -->
-</div>
 <div>
 	<button type="button" on:click={() => {cameraPosition = defaultCameraPosition}}>Reset Camera to Start</button>
 </div>
@@ -176,62 +161,90 @@
 			position={[0, 0, 500]}
 			receiveShadow
 		/>
+
+		{materialsListChronological = loadImageTextures(chronologicalImages)}
+		{globalMaterials.set([...materialsListChronological])}
+
+		{#each chronologicalImages as item, index}
+			{console.log("Loading " + index + "of " + chronologicalImages.length)}
+
+			{relatedImages = filterRelated(item, chronologicalImages)}
+			{materialsListRelated = loadImageTextures(relatedImages)}
+
+			<!-- SET UP:  -->
+			{yearGeometries.push(
+				generateYearGeometry(
+					years[index]
+				)
+			)}
+
+			<!-- BEGIN Image Infos -->
+			{allTextGeo = generateAllText(item)}
+			{allTextPositionList.push(allTextPosition)}
+			{textPlanePositionList.push(textPlanePosition)}
+			{imagePositionList.push(imagePosition)}
+			{yearPositionList.push(yearPosition)}
 			
-		{materialsList = loadImageTextures(chronologicalImages)}
-		{globalMaterials.set([...materialsList])}
-		{#if displayMode === "chronological"}
-			{#each chronologicalImages as item, index}
-				<!-- SET UP:  -->
-				{yearGeometries.push(
-					generateYearGeometry(
-						years[index]
-					)
-				)}
+			<!-- IF different year, add image behind, else above -->
+			{#if years.length === 1 || years[index-1] != years[index]}
+				{calculatePosition('back', chronologicalImages, item, index)}
+				{shiftYear()}
+			{:else}
+				{calculatePosition('side', chronologicalImages, item, index)}
+			{/if}
 
-				<!-- BEGIN Image Infos -->
-				{allTextGeo = generateAllText(item)}
-				{allTextPositionList = [...allTextPosition]}
-				{textPlanePositionList = [...textPlanePosition]}
-				{imagePositionList = [...imagePosition]}					
-				{yearPositionList.push([...yearPosition])}
+			<SC.Mesh
+				geometry={yearGeometries[index]}
+				material={lineMaterial}
+				position={yearPositionList[index]}
+				rotation={[0, Math.PI / -2, 0]}
+			/>
 
-				<SC.Mesh
-					geometry={textPlaneGeometry}
-					material={ new MeshBasicMaterial({ color: 0xFFFFFF }) }
-					position={textPlanePositionList}
-					rotation={[0, Math.PI / 2, 0]}
-					castShadow
-				/>
-				<SC.Mesh
-					geometry={allTextGeo}
-					material={lineMaterial}
-					position={allTextPositionList}
-					rotation={[0, Math.PI / -2, 0]}
-				/>
-				<!-- END image infos -->
-				<SC.Mesh
-					geometry={item.dimensions ? new BoxGeometry(item.dimensions.width, item.dimensions.height, basicDepth) : imageGeometry}
-					material={materialsList[index]}
-					position={imagePositionList}
-					rotation={[0, Math.PI / 2, 0]}
-					castShadow
-				/>
-				<!-- IF different year, add image behind, else above -->
-				{#if years[index-1] != years[index] || years.length == 1}
-					{calculatePosition('back', chronologicalImages, item, index)}
+			<SC.Mesh
+				geometry={textPlaneGeometry}
+				material={ new MeshBasicMaterial({ color: 0xFFFFFF }) }
+				position={textPlanePositionList[index]}
+				rotation={[0, Math.PI / 2, 0]}
+				castShadow
+			/>
+			<SC.Mesh
+				geometry={allTextGeo}
+				material={lineMaterial}
+				position={allTextPositionList[index]}
+				rotation={[0, Math.PI / -2, 0]}
+			/>
+
+			<!-- END image infos -->
+			<SC.Mesh
+				geometry={item.dimensions ? new BoxGeometry(item.dimensions.width, item.dimensions.height, basicDepth) : imageGeometry}
+				material={materialsListChronological[index]}
+				position={imagePositionList[index]}
+				rotation={[0, Math.PI / 2, 0]}
+				castShadow
+			/>
+
+			<!-- Display Related Images -->
+			{#if relatedImages && relatedImages.length > 0}
+				{#each relatedImages as relatedItem, rIndex}
+					{relatedImagePosition = calculatePositionUp([...imagePositionList[index]], item, relatedImages, relatedItem, rIndex)}
+					{relatedImagePositionList.push([...relatedImagePosition])}
 					<SC.Mesh
-						geometry={yearGeometries[index]}
-						material={lineMaterial}
-						position={yearPositionList[index]}
-						rotation={[0, Math.PI / -2, 0]}
+						geometry={
+							relatedItem.dimensions ?
+							new BoxGeometry(
+								relatedItem.dimensions.width,
+								relatedItem.dimensions.height,
+								basicDepth,
+							) :
+							imageGeometry
+						}
+						material={materialsListRelated[rIndex]}
+						position={[...relatedImagePosition]}
+						rotation={[0, Math.PI / 2, 0]}
 					/>
-					{shiftYear()}
-				{:else}
-					{calculatePosition('side', chronologicalImages, item, index)}
-				{/if}
-				{console.log("Loading " + index + "of " + chronologicalImages.length)}
-			{/each}
-		{/if}
+				{/each}
+			{/if}
+		{/each}
 	</SC.Canvas>
 </div>
 
