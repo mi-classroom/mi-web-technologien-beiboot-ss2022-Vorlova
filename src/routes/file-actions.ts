@@ -15,13 +15,10 @@ export const handleSubmit = (files: any) => {
             imageCollections.chronologicalImages.set(chronologicalImages);
             chronologicalImages.forEach( (image) => {
                 years.push(
-                    cleanUpYear(
-                        image.sortingPosition
-                    )
+                    image.cleanedUpDate
                 )
             })
             resetData(chronologicalImages)
-            console.log("Done handling JSON")
         }
     );
 }
@@ -44,11 +41,13 @@ const extractImageItems = (
             const medium: string = removeBrackets(item.medium);
             const title: string = removeBrackets(item.metadata.title);
             const dimensions = formatDimensions(item.images.overall.images[0].sizes.medium.dimensions);
+            const cleanedUpDate = cleanUpYear(item.sortingNumber)
 
             images.push({
                 src: item.images.overall.images[0].sizes.medium.src,
                 title,
                 date: item.metadata.date,
+                cleanedUpDate,
                 medium,
                 repository: item.repository,
                 sortingPosition: item.sortingNumber,
