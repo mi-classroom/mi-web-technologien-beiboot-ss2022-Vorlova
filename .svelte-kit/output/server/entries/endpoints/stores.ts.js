@@ -1,4 +1,4 @@
-import { n as noop, a as safe_not_equal } from "../../chunks/index-abe1f00f.js";
+import { n as noop, a as safe_not_equal } from "../../chunks/index-23786d4b.js";
 const subscriber_queue = [];
 function writable(value, start = noop) {
   let stop;
@@ -43,16 +43,18 @@ function writable(value, start = noop) {
 }
 const imageBaseWidth = 20;
 const imageBaseHeight = 40;
-const textPlaneBaseHeight = 20;
-const textPlaneBaseWidth = 70;
+const textPlaneBaseHeight = 25;
+const textPlaneBaseWidth = 100;
 const chronologicalImages = writable([]);
+const relatedImages = writable([]);
 const imageCollections = {
-  chronologicalImages
+  chronologicalImages,
+  relatedImages
 };
 const materials = writable();
 const yearGeometries = writable([]);
 const allTextGeo = writable([]);
-const defaultCameraPosition = [-2050, 50, 15];
+const defaultCameraPosition = [-2300, 50, 15];
 const defaultImagePosition = [-2e3, imageBaseHeight / 2 + textPlaneBaseHeight + 10, imageBaseWidth / 2];
 const defaultTextPlanePosition = [-2e3, textPlaneBaseHeight / 2 + 5, textPlaneBaseWidth / 2];
 const defaultAllTextPosition = [defaultTextPlanePosition[0], defaultTextPlanePosition[1] + textPlaneBaseHeight / 2 - 3, defaultTextPlanePosition[2] - textPlaneBaseWidth / 2 + 1];

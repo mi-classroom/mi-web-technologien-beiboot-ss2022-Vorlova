@@ -2,7 +2,7 @@ import { LineBasicMaterial, MeshStandardMaterial, BoxGeometry } from "three";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import { Font } from "three/examples/jsm/loaders/FontLoader.js";
 import { imageBaseWidth, imageBaseHeight, textPlaneBaseWidth, textPlaneBaseHeight, materials, allTextGeo, yearGeometries, yearPosition as yearPosition$1, defaultImagePosition, imagePosition as imagePosition$1, textPlanePosition as textPlanePosition$1, defaultTextPlanePosition, allTextPosition as allTextPosition$1, defaultAllTextPosition } from "./stores.ts.js";
-import "../../chunks/index-abe1f00f.js";
+import "../../chunks/index-23786d4b.js";
 const glyphs = {
   "0": {
     ha: 794,
@@ -6138,11 +6138,11 @@ let allTextPosition;
 let imagePosition;
 let yearPosition;
 const basicDepth = 1;
-const heightSpacer = 10;
-const depthSpacer = 150;
+const heightSpacer = 20;
+const depthSpacer = 300;
 const lineMaterial = new LineBasicMaterial({ color: 2236962 });
 const groundMaterial = new MeshStandardMaterial({ color: 11842740 });
-const groundGeometry = new BoxGeometry(5e3, 0, 1024);
+const groundGeometry = new BoxGeometry(5e3, 0, 2048);
 const imageGeometry = new BoxGeometry(imageBaseWidth, imageBaseHeight, basicDepth);
 const textPlaneGeometry = new BoxGeometry(textPlaneBaseWidth, textPlaneBaseHeight, basicDepth);
 const generateAllText = (image) => {
@@ -6187,15 +6187,19 @@ const calculatePosition = (tag, images, item, index) => {
       textPlanePosition[1] = defaultTextPlanePosition[1];
       allTextPosition[1] = defaultAllTextPosition[1];
       imagePosition[1] = item.dimensions ? item.dimensions.height / 2 + textPlaneBaseHeight + 10 : imageBaseHeight / 2 + textPlaneBaseHeight + 10;
+      textPlanePosition[2] = defaultTextPlanePosition[2];
+      allTextPosition[2] = defaultAllTextPosition[2];
+      imagePosition[2] = item.dimensions ? item.dimensions.width / 2 : defaultImagePosition[2];
       textPlanePosition$1.set(textPlanePosition);
       allTextPosition$1.set(allTextPosition);
       imagePosition$1.set(imagePosition);
       break;
     }
-    case "up": {
-      textPlanePosition[1] = textPlanePosition[1] + images[index - 1].dimensions.height + imageBaseWidth + heightSpacer + 5;
-      allTextPosition[1] = allTextPosition[1] + images[index - 1].dimensions.height + imageBaseWidth + heightSpacer + 5;
-      imagePosition[1] = imagePosition[1] + item.dimensions.height / 2 + images[index - 1].dimensions.height / 2 + imageBaseWidth + heightSpacer + 5;
+    case "side": {
+      imagePosition[1] = item.dimensions ? item.dimensions.height / 2 + textPlaneBaseHeight + 10 : imageBaseHeight / 2 + textPlaneBaseHeight + 10;
+      textPlanePosition[2] = textPlanePosition[2] + images[index - 1].dimensions.width + textPlaneBaseHeight + heightSpacer * 2;
+      allTextPosition[2] = allTextPosition[2] + images[index - 1].dimensions.width + textPlaneBaseHeight + heightSpacer * 2;
+      imagePosition[2] = imagePosition[2] + item.dimensions.width / 2 + images[index - 1].dimensions.width / 2 + textPlaneBaseHeight + heightSpacer * 2;
       textPlanePosition$1.set(textPlanePosition);
       allTextPosition$1.set(allTextPosition);
       imagePosition$1.set(imagePosition);
@@ -6208,6 +6212,10 @@ const shiftYear = () => {
     yearPosition = value;
   });
   yearPosition[0] = yearPosition[0] + depthSpacer;
-  yearPosition$1.set(yearPosition);
+  yearPosition$1.set([...yearPosition]);
 };
-export { calculatePosition, generateAllText, generateYearGeometry, groundGeometry, groundMaterial, imageGeometry, lineMaterial, resetData, shiftYear, textPlaneGeometry };
+const calculatePositionUp = (position, imageBefore, images, item, index) => {
+  position[1] = images[index - 1] ? position[1] + item.dimensions.height / 2 + images[index - 1].dimensions.height / 2 + textPlaneBaseHeight + heightSpacer + 5 : position[1] + item.dimensions.height / 2 + imageBefore.dimensions.height / 2 + textPlaneBaseHeight + heightSpacer + 5;
+  return position;
+};
+export { calculatePosition, calculatePositionUp, generateAllText, generateYearGeometry, groundGeometry, groundMaterial, imageGeometry, lineMaterial, resetData, shiftYear, textPlaneGeometry };

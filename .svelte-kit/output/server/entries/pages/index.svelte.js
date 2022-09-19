@@ -1,10 +1,12 @@
-import { g as getContext, s as setContext, o as onDestroy, c as create_ssr_component, b as add_attribute, d as createEventDispatcher, v as validate_component, e as escape } from "../../chunks/index-abe1f00f.js";
-import { groundGeometry, groundMaterial } from "../endpoints/scene-creation.ts.js";
-import { allTextPosition, imageCollections, imagePosition, textPlanePosition, yearPosition, yearGeometries, materials, defaultCameraPosition } from "../endpoints/stores.ts.js";
+import { g as getContext, s as setContext, o as onDestroy, c as create_ssr_component, b as add_attribute, d as createEventDispatcher, v as validate_component, e as escape, f as each } from "../../chunks/index-23786d4b.js";
+import { years } from "../endpoints/file-actions.ts.js";
+import { groundGeometry, groundMaterial, generateYearGeometry, generateAllText, calculatePosition, shiftYear, lineMaterial, textPlaneGeometry, imageGeometry, calculatePositionUp } from "../endpoints/scene-creation.ts.js";
+import { imageCollections, allTextPosition, imagePosition, textPlanePosition, yearPosition, yearGeometries, defaultImagePosition, materials, defaultCameraPosition } from "../endpoints/stores.ts.js";
 import * as THREE from "three";
-import { PerspectiveCamera, Vector3, TextureLoader, Color, MeshBasicMaterial } from "three";
+import { PerspectiveCamera, Vector3, TextureLoader, Color, MeshBasicMaterial, BoxGeometry } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import "three/examples/jsm/helpers/VertexNormalsHelper.js";
+import { filterRelated } from "../endpoints/image-filters.ts.js";
 import "three/examples/jsm/geometries/TextGeometry";
 import "three/examples/jsm/loaders/FontLoader.js";
 const ROOT = {};
@@ -555,22 +557,41 @@ const css = {
   code: ".gallery.svelte-1mxod5q{width:99%;height:85%;position:absolute}",
   map: null
 };
+const basicDepth = 1;
 const Routes = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-  let materialsList = [];
+  let allTextPositionList = [];
+  let allTextPosition$1;
+  let imagePositionList = [];
+  let imagePosition$1;
+  let relatedImagePosition;
+  let textPlanePositionList = [];
+  let textPlanePosition$1;
+  let yearPositionList = [];
+  let yearPosition$1;
+  let materialsListChronological = [];
+  let materialsListRelated = [];
+  let yearGeometries$1 = [];
   let chronologicalImages = [];
+  let allTextGeo;
   let cameraPosition = defaultCameraPosition;
-  allTextPosition.subscribe((value) => {
-  });
+  let relatedImages;
   imageCollections.chronologicalImages.subscribe((value) => {
     chronologicalImages = value;
   });
+  allTextPosition.subscribe((value) => {
+    allTextPosition$1 = value;
+  });
   imagePosition.subscribe((value) => {
+    imagePosition$1 = value;
   });
   textPlanePosition.subscribe((value) => {
+    textPlanePosition$1 = value;
   });
   yearPosition.subscribe((value) => {
+    yearPosition$1 = value;
   });
   yearGeometries.subscribe((value) => {
+    yearGeometries$1 = value;
   });
   const loader = new TextureLoader();
   const loadImageTextures = (images) => {
@@ -587,7 +608,6 @@ const Routes = create_ssr_component(($$result, $$props, $$bindings, slots) => {
         new MeshBasicMaterial({ map: loader.load(newUrl) })
       ]);
     });
-    console.log("Loaded Textures");
     return imageMaterials;
   };
   $$result.css.add(css);
@@ -597,22 +617,23 @@ const Routes = create_ssr_component(($$result, $$props, $$bindings, slots) => {
 	<button type="${"submit"}">Use this file</button></form>
 
 <h1>Gallery:</h1>
-<div><h2>Display Modes:</h2>
-	<button type="${"button"}">Chronological</button>
-	<button type="${"button"}">Related in Content</button>
-	<button type="${"button"}">Similar</button>
-	<button type="${"button"}">Belonging Together</button>
-	<button type="${"button"}">Part of same work</button></div>
+<div><button type="${"button"}">Reset Camera to Start</button></div>
+
 <div class="${"gallery svelte-1mxod5q"}">${validate_component(Canvas, "SC.Canvas").$$render($$result, {
     antialias: true,
-    background: new Color(180, 180, 180)
+    background: new Color(180, 180, 180),
+    shadows: true
   }, {}, {
     default: () => {
       return `${validate_component(PerspectiveCamera_1, "SC.PerspectiveCamera").$$render($$result, {
         position: cameraPosition,
-        target: [10, 25, 0]
+        target: defaultImagePosition
       }, {}, {})}
-		${validate_component(OrbitControls_1, "SC.OrbitControls").$$render($$result, { enableZoom: true, enableRotate: true }, {}, {})}
+		${validate_component(OrbitControls_1, "SC.OrbitControls").$$render($$result, {
+        enableZoom: true,
+        enableRotate: true,
+        maxPolarAngle: Math.PI * 0.51
+      }, {}, {})}
 		${validate_component(AmbientLight, "SC.AmbientLight").$$render($$result, { intensity: 1 }, {}, {})}
 		${validate_component(DirectionalLight, "SC.DirectionalLight").$$render($$result, {
         intensity: 0.6,
@@ -623,12 +644,75 @@ const Routes = create_ssr_component(($$result, $$props, $$bindings, slots) => {
 		${validate_component(Mesh, "SC.Mesh").$$render($$result, {
         geometry: groundGeometry,
         material: groundMaterial,
-        position: [0, 0, 0],
+        position: [0, 0, 500],
         receiveShadow: true
       }, {}, {})}
-			${escape(materialsList = loadImageTextures(chronologicalImages))}
-			${escape(materials.set([...materialsList]))}
-			${``}`;
+
+		${escape(materialsListChronological = loadImageTextures(chronologicalImages))}
+		${escape(materials.set([...materialsListChronological]))}
+
+		${each(chronologicalImages, (item, index) => {
+        return `${escape(console.log("Loading " + index + "of " + chronologicalImages.length))}
+
+			${escape(relatedImages = filterRelated(item, chronologicalImages))}
+			${escape(materialsListRelated = loadImageTextures(relatedImages))}
+
+			
+			${escape(yearGeometries$1.push(generateYearGeometry(years[index])))}
+
+			
+			${escape(allTextGeo = generateAllText(item))}
+			${escape(allTextPositionList.push(allTextPosition$1))}
+			${escape(textPlanePositionList.push(textPlanePosition$1))}
+			${escape(imagePositionList.push(imagePosition$1))}
+			${escape(yearPositionList.push(yearPosition$1))}
+			
+			
+			${years.length === 1 || years[index - 1] != years[index] ? `${escape(calculatePosition("back", chronologicalImages, item, index))}
+				${escape(shiftYear())}` : `${escape(calculatePosition("side", chronologicalImages, item, index))}`}
+
+			${validate_component(Mesh, "SC.Mesh").$$render($$result, {
+          geometry: yearGeometries$1[index],
+          material: lineMaterial,
+          position: yearPositionList[index],
+          rotation: [0, Math.PI / -2, 0]
+        }, {}, {})}
+
+			${validate_component(Mesh, "SC.Mesh").$$render($$result, {
+          geometry: textPlaneGeometry,
+          material: new MeshBasicMaterial({ color: 16777215 }),
+          position: textPlanePositionList[index],
+          rotation: [0, Math.PI / 2, 0],
+          castShadow: true
+        }, {}, {})}
+			${validate_component(Mesh, "SC.Mesh").$$render($$result, {
+          geometry: allTextGeo,
+          material: lineMaterial,
+          position: allTextPositionList[index],
+          rotation: [0, Math.PI / -2, 0]
+        }, {}, {})}
+
+			
+			${validate_component(Mesh, "SC.Mesh").$$render($$result, {
+          geometry: item.dimensions ? new BoxGeometry(item.dimensions.width, item.dimensions.height, basicDepth) : imageGeometry,
+          material: materialsListChronological[index],
+          position: imagePositionList[index],
+          rotation: [0, Math.PI / 2, 0],
+          castShadow: true
+        }, {}, {})}
+
+			
+			${relatedImages && relatedImages.length > 0 ? `${escape(relatedImagePosition = [...imagePositionList[index]])}
+				${each(relatedImages, (relatedItem, rIndex) => {
+          return `${escape(relatedImagePosition = calculatePositionUp(relatedImagePosition, item, relatedImages, relatedItem, rIndex))}
+					${validate_component(Mesh, "SC.Mesh").$$render($$result, {
+            geometry: relatedItem.dimensions ? new BoxGeometry(relatedItem.dimensions.width / 2, relatedItem.dimensions.height / 2, basicDepth) : imageGeometry,
+            material: materialsListRelated[rIndex],
+            position: [...relatedImagePosition],
+            rotation: [0, Math.PI / 2, 0]
+          }, {}, {})}`;
+        })}` : ``}`;
+      })}`;
     }
   })}
 </div>`;

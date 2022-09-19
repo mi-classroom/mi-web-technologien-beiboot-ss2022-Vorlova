@@ -4,7 +4,7 @@
     "src": ".svelte-kit/build/index.js",
     "isEntry": true,
     "imports": [
-      "_index-abe1f00f.js"
+      "_index-23786d4b.js"
     ],
     "dynamicImports": [
       ".svelte-kit/build/hooks.js"
@@ -15,7 +15,7 @@
     "src": "src/routes/stores.ts",
     "isEntry": true,
     "imports": [
-      "_index-abe1f00f.js"
+      "_index-23786d4b.js"
     ]
   },
   "src/routes/scene-creation.ts": {
@@ -24,7 +24,7 @@
     "isEntry": true,
     "imports": [
       "src/routes/stores.ts",
-      "_index-abe1f00f.js"
+      "_index-23786d4b.js"
     ]
   },
   "src/routes/image-filters.ts": {
@@ -39,7 +39,7 @@
     "imports": [
       "src/routes/scene-creation.ts",
       "src/routes/stores.ts",
-      "_index-abe1f00f.js"
+      "_index-23786d4b.js"
     ]
   },
   ".svelte-kit/runtime/components/layout.svelte": {
@@ -47,7 +47,7 @@
     "src": ".svelte-kit/runtime/components/layout.svelte",
     "isEntry": true,
     "imports": [
-      "_index-abe1f00f.js"
+      "_index-23786d4b.js"
     ]
   },
   ".svelte-kit/runtime/components/error.svelte": {
@@ -55,7 +55,7 @@
     "src": ".svelte-kit/runtime/components/error.svelte",
     "isEntry": true,
     "imports": [
-      "_index-abe1f00f.js"
+      "_index-23786d4b.js"
     ]
   },
   "src/routes/index.svelte": {
@@ -63,16 +63,26 @@
     "src": "src/routes/index.svelte",
     "isEntry": true,
     "imports": [
-      "_index-abe1f00f.js",
+      "_index-23786d4b.js",
+      "src/routes/file-actions.ts",
       "src/routes/scene-creation.ts",
-      "src/routes/stores.ts"
+      "src/routes/stores.ts",
+      "src/routes/image-filters.ts"
     ],
     "css": [
       "assets/entries/pages/index.svelte-0faaa50a.css"
     ]
   },
-  "_index-abe1f00f.js": {
-    "file": "chunks/index-abe1f00f.js"
+  "src/routes/legend.svelte": {
+    "file": "entries/pages/legend.svelte.js",
+    "src": "src/routes/legend.svelte",
+    "isEntry": true,
+    "imports": [
+      "_index-23786d4b.js"
+    ]
+  },
+  "_index-23786d4b.js": {
+    "file": "chunks/index-23786d4b.js"
   },
   ".svelte-kit/build/hooks.js": {
     "file": "chunks/hooks-1c45ba0b.js",

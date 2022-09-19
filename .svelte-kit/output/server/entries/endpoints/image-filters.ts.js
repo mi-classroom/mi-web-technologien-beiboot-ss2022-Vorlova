@@ -1,28 +1,19 @@
 const resetImages = (images) => {
   return [];
 };
-const onlyUnique = (value, index, self) => {
-  return self.indexOf(value) === index;
-};
-const filterForInventoryNumbersBy = (imageArray, tag) => {
-  let smallArray = [];
-  const bigArray = [];
-  imageArray.forEach((image) => {
-    smallArray = [];
-    image.references.forEach((ref) => {
-      if (ref.kind === tag) {
-        smallArray.push(ref.inventoryNumber);
+const filterRelated = (originalImage, imageArray) => {
+  let relatedImage;
+  const relatedImageArray = [];
+  originalImage.references.forEach((reference) => {
+    relatedImage = imageArray.find((image) => {
+      if (reference.inventoryNumber === image.inventoryNumber) {
+        return image;
       }
     });
-    if (smallArray.length > 0) {
-      smallArray.push(image.inventoryNumber);
-      smallArray.sort((a, b) => {
-        return a.localeCompare(b);
-      });
-      bigArray.push(smallArray);
+    if (relatedImage) {
+      relatedImageArray.push(relatedImage);
     }
   });
-  const uniqueArray = bigArray.filter(onlyUnique);
-  return uniqueArray;
+  return relatedImageArray;
 };
-export { filterForInventoryNumbersBy, resetImages };
+export { filterRelated, resetImages };

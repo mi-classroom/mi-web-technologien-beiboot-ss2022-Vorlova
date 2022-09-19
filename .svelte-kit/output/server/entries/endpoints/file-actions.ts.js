@@ -3,7 +3,7 @@ import { imageCollections } from "./stores.ts.js";
 import "three";
 import "three/examples/jsm/geometries/TextGeometry";
 import "three/examples/jsm/loaders/FontLoader.js";
-import "../../chunks/index-abe1f00f.js";
+import "../../chunks/index-23786d4b.js";
 let years = [];
 const handleSubmit = (files) => {
   handleJSON(files).then(function(value) {
@@ -13,10 +13,9 @@ const handleSubmit = (files) => {
     sortImagesBySortingPosition(chronologicalImages);
     imageCollections.chronologicalImages.set(chronologicalImages);
     chronologicalImages.forEach((image) => {
-      years.push(cleanUpYear(image.sortingPosition));
+      years.push(image.cleanedUpDate);
     });
     resetData(chronologicalImages);
-    console.log("Done handling JSON");
   });
 };
 const handleJSON = async (files) => {
@@ -31,10 +30,12 @@ const extractImageItems = (jsonObj) => {
       const medium = removeBrackets(item.medium);
       const title = removeBrackets(item.metadata.title);
       const dimensions = formatDimensions(item.images.overall.images[0].sizes.medium.dimensions);
+      const cleanedUpDate = cleanUpYear(item.sortingNumber);
       images.push({
         src: item.images.overall.images[0].sizes.medium.src,
         title,
         date: item.metadata.date,
+        cleanedUpDate,
         medium,
         repository: item.repository,
         sortingPosition: item.sortingNumber,

@@ -3,11 +3,12 @@ export const manifest = {
 	assets: new Set(["favicon.png"]),
 	mimeTypes: {".png":"image/png"},
 	_: {
-		entry: {"file":"start-3b4489b5.js","js":["start-3b4489b5.js","chunks/index-8b93d9e8.js","chunks/index-aae7e910.js"],"css":[]},
+		entry: {"file":"start-2e48f50e.js","js":["start-2e48f50e.js","chunks/index-8b93d9e8.js","chunks/index-aae7e910.js"],"css":[]},
 		nodes: [
 			() => import('./nodes/0.js'),
 			() => import('./nodes/1.js'),
-			() => import('./nodes/2.js')
+			() => import('./nodes/2.js'),
+			() => import('./nodes/3.js')
 		],
 		routes: [
 			{
@@ -52,6 +53,17 @@ export const manifest = {
 				names: [],
 				types: [],
 				load: () => import('./entries/endpoints/file-actions.ts.js')
+			},
+			{
+				type: 'page',
+				id: "legend",
+				pattern: /^\/legend\/?$/,
+				names: [],
+				types: [],
+				path: "/legend",
+				shadow: null,
+				a: [0,3],
+				b: [1]
 			}
 		],
 		matchers: async () => {
