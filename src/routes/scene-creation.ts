@@ -119,6 +119,10 @@ export const calculatePosition = (
             break;
         }
         case 'side': {
+            imagePosition[1] = item.dimensions ?
+                item.dimensions.height/2 + textPlaneBaseHeight + 10 :
+                imageBaseHeight/2 + textPlaneBaseHeight + 10;
+
             textPlanePosition[2] =
             textPlanePosition[2] + images[index - 1].dimensions.width + textPlaneBaseHeight + heightSpacer *2;
             allTextPosition[2] =
