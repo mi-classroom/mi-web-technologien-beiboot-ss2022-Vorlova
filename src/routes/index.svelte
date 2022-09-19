@@ -108,7 +108,6 @@
 				// back ?
 				new MeshBasicMaterial({ color: 0x000000 }),
 				// front ?
-				// new MeshBasicMaterial({ color: 0x000000 }),
 				new MeshBasicMaterial({map: loader.load(newUrl)}),
 			]);
 		});
