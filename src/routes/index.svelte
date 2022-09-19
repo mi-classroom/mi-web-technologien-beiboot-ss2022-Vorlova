@@ -1,5 +1,7 @@
 <script lang="ts">
+	import { filterRelated } from './image-filters';
 	import { handleSubmit, years } from './file-actions';
+	import Legend from './legend.svelte';
 	import {
 		calculatePosition,
 		calculatePositionUp,
@@ -27,7 +29,6 @@
 	import type { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 
 	import * as SC from 'svelte-cubed';
-	import { filterRelated } from './image-filters';
 
 	let allTextPositionList: [number, number, number][] = [];
 	let allTextPosition: [number, number, number];
@@ -115,22 +116,27 @@
 	}
 </script>
 
-<form on:submit|preventDefault={() => handleSubmit(files)}>
-	<!-- the `submit` event's default is prevented,
-	     so the page won't reload -->
-	<label for="source-file">Upload a JSON source for the images:</label>
-	<input
-		accept="application/JSON"
-		bind:files
-		id="source-file"
-		name="source-file"
-		type="file"
-	/>
-	<button type="submit">Use this file</button>
-</form>
+<div class="upload-form-container">
+	<form class="upload-form" on:submit|preventDefault={() => handleSubmit(files)}>
+		<!-- the `submit` event's default is prevented,
+			so the page won't reload -->
+		<p>
+			<label for="source-file">
+				<b>Upload a JSON source file to display the images:</b>
+			</label>
+		</p>
+		<input
+			accept="application/JSON"
+			bind:files
+			id="source-file"
+			name="source-file"
+			type="file"
+		/>
+		<button type="submit">Use this file</button>
+	</form>
+</div>
 
-<h1>Gallery:</h1>
-<div>
+<div class="camera-button">
 	<button type="button" on:click={() => {cameraPosition = defaultCameraPosition}}>Reset Camera to Start</button>
 </div>
 
@@ -241,4 +247,5 @@
 	</SC.Canvas>
 </div>
 
+<Legend />
 <style lang="scss" src="../assets/styles/scss/styles.scss"></style>
