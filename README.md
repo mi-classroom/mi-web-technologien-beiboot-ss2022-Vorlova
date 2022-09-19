@@ -1,21 +1,18 @@
+![image](Header_image.png)
 # Web Technologien // begleitendes Projekt Sommersemester 2022
 
 Zum Modul Web Technologien gibt es ein begleitendes Projekt. Im Rahmen dieses Projekts werden wir von Veranstaltung zu Veranstaltung ein Projekt sukzessive weiter entwickeln und uns im Rahmen der Veranstaltung den Fortschritt anschauen, Code Reviews machen und Entwicklungsschritte vorstellen und diskutieren.
 
 Als organisatorischen Rahmen für das Projekt nutzen wir GitHub Classroom. Inhaltlich befassen wir uns mit der Entwicklung einer kleinen Web-Anwendung für die Bearbeitung von Bildern. Hierbei steht weniger ein professioneller Konzeptions-, Entwurfs- und Entwicklungsprozess im Vordergrund, sondern vielmehr die sukzessive Weiterentwicklung einer Anwendung, das Ausprobieren, Vergleichen, Refactoren und die Freude an lauffähigem Code.
 
-# live demo
+# Live Demo
 
 Um die live Demo zu sehen einfach https://mi-classroom.github.io/mi-web-technologien-beiboot-ss2022-Vorlova/ besuchen und die passende json Datei hochladen.
-
-# create-svelte
-
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
 
 
 ## Developing
 
-start a development server:
+Start a development server:
 
 ```bash
 npm run dev
@@ -26,15 +23,13 @@ npm run dev -- --open
 
 ## Building
 
-To create a production version of your app:
+To create a static build of the app:
 
 ```bash
-npm run build
+npm run work-build
 ```
 
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+More details can be found in the [Deployment Workflow Documentation](docs/03a-Deployment-Workflow.md).
 
 # start with Docker
 
