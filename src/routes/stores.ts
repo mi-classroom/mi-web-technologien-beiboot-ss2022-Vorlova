@@ -2,13 +2,15 @@ import { writable } from 'svelte/store';
 
 export const imageBaseWidth = 20;
 export const imageBaseHeight = 40;
-export const textPlaneBaseHeight = 20;
-export const textPlaneBaseWidth = 70;
+export const textPlaneBaseHeight = 25;
+export const textPlaneBaseWidth = 100;
 
 const chronologicalImages = writable([]);
+const relatedImages = writable([]);
 
 export const imageCollections = {
     chronologicalImages,
+    relatedImages,
 }
 
 export const materials = writable();

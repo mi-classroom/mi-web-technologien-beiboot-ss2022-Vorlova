@@ -17,7 +17,6 @@
 		defaultImagePosition,
 		imageCollections,
 		imagePosition as globalImagePosition,
-		relatedImagePosition as globalRelatedImagePosition,
 		materials as globalMaterials,
 		textPlanePosition as globalTextPlanePosition,
 		yearGeometries as storedYearGeometries,
@@ -36,7 +35,6 @@
 	let imagePositionList: [number, number, number][] = [];
 	let imagePosition: [number, number, number];
 	
-	let relatedImagePositionList: [number, number, number][] = [];
 	let relatedImagePosition: [number, number, number];
 
 	let textPlanePositionList: [number, number, number][] = [];
@@ -71,11 +69,6 @@
 	globalImagePosition.subscribe(
 		value => {
 			imagePosition = value;
-		}
-	)
-	globalRelatedImagePosition.subscribe(
-		value => {
-			relatedImagePosition = value;
 		}
 	)
 	globalTextPlanePosition.subscribe(
@@ -228,7 +221,6 @@
 				{relatedImagePosition = [...imagePositionList[index]]}
 				{#each relatedImages as relatedItem, rIndex}
 					{relatedImagePosition = calculatePositionUp(relatedImagePosition, item, relatedImages, relatedItem, rIndex)}
-					{relatedImagePositionList.push([...relatedImagePosition])}
 					<SC.Mesh
 						geometry={
 							relatedItem.dimensions ?
