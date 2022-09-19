@@ -5,38 +5,43 @@
 		<link rel="icon" href="./favicon.png" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta http-equiv="content-security-policy" content="">
-	<link rel="stylesheet" href="/_app/immutable/assets/pages/index.svelte-9817112f.css">
-	<link rel="modulepreload" href="/_app/immutable/start-2e48f50e.js">
+	<link rel="stylesheet" href="/_app/immutable/assets/pages/index.svelte-aa65b51f.css">
+	<link rel="stylesheet" href="/_app/immutable/assets/pages/legend.svelte-102f25f6.css">
+	<link rel="modulepreload" href="/_app/immutable/start-24a19b72.js">
 	<link rel="modulepreload" href="/_app/immutable/chunks/index-8b93d9e8.js">
 	<link rel="modulepreload" href="/_app/immutable/chunks/index-aae7e910.js">
 	<link rel="modulepreload" href="/_app/immutable/layout.svelte-afc5da85.js">
-	<link rel="modulepreload" href="/_app/immutable/pages/index.svelte-f6260d39.js">
+	<link rel="modulepreload" href="/_app/immutable/pages/index.svelte-7a0e5a3f.js">
+	<link rel="modulepreload" href="/_app/immutable/pages/legend.svelte-fd5f1197.js">
 	</head>
 	<body>
 		<div>
 
 
-<form>
-	<label for="source-file">Upload a JSON source for the images:</label>
-	<input accept="application/JSON" id="source-file" name="source-file" type="file">
-	<button type="submit">Use this file</button></form>
+<div class="upload-form-container svelte-10k0d3z"><form class="upload-form svelte-10k0d3z">
+		<p class="svelte-10k0d3z"><label for="source-file" class="svelte-10k0d3z"><b class="svelte-10k0d3z">Upload a JSON source file to display the images:</b></label></p>
+		<input accept="application/JSON" id="source-file" name="source-file" type="file" class="svelte-10k0d3z">
+		<button type="submit" class="svelte-10k0d3z">Use this file</button></form></div>
 
-<h1>Gallery:</h1>
-<div><button type="button">Reset Camera to Start</button></div>
+<div class="camera-button svelte-10k0d3z"><button type="button" class="svelte-10k0d3z">Reset Camera to Start</button></div>
 
-<div class="gallery svelte-1mxod5q">
+<div class="gallery svelte-10k0d3z">
 
 <div class="container svelte-1uqz219"><canvas class="svelte-1uqz219"></canvas>
 
 	
-</div>
+</div></div>
+
+<div class="legend svelte-x2uux1"><p>To turn camera, hold the <b>left mouse button</b> and drag across the screen.</p>
+	<p>Hold the <b>right mouse button</b> to drag the position of the camera.</p>
+	<p>Zoom with your mouse&#39;s or touchpad&#39;s <b>scrolling motion</b>.</p>
 </div>
 
 
-		<script type="module" data-sveltekit-hydrate="y27639">
-		import { start } from "/_app/immutable/start-2e48f50e.js";
+		<script type="module" data-sveltekit-hydrate="1g36mhk">
+		import { start } from "/_app/immutable/start-24a19b72.js";
 		start({
-			target: document.querySelector('[data-sveltekit-hydrate="y27639"]').parentNode,
+			target: document.querySelector('[data-sveltekit-hydrate="1g36mhk"]').parentNode,
 			paths: {"base":"","assets":""},
 			session: {},
 			route: true,

@@ -1,12 +1,13 @@
 import { g as getContext, s as setContext, o as onDestroy, c as create_ssr_component, b as add_attribute, d as createEventDispatcher, v as validate_component, e as escape, f as each } from "../../chunks/index-23786d4b.js";
+import { filterRelated } from "../endpoints/image-filters.ts.js";
 import { years } from "../endpoints/file-actions.ts.js";
+import Legend from "./legend.svelte.js";
 import { groundGeometry, groundMaterial, generateYearGeometry, generateAllText, calculatePosition, shiftYear, lineMaterial, textPlaneGeometry, imageGeometry, calculatePositionUp } from "../endpoints/scene-creation.ts.js";
 import { imageCollections, allTextPosition, imagePosition, textPlanePosition, yearPosition, yearGeometries, defaultImagePosition, materials, defaultCameraPosition } from "../endpoints/stores.ts.js";
 import * as THREE from "three";
 import { PerspectiveCamera, Vector3, TextureLoader, Color, MeshBasicMaterial, BoxGeometry } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import "three/examples/jsm/helpers/VertexNormalsHelper.js";
-import { filterRelated } from "../endpoints/image-filters.ts.js";
 import "three/examples/jsm/geometries/TextGeometry";
 import "three/examples/jsm/loaders/FontLoader.js";
 const ROOT = {};
@@ -552,9 +553,9 @@ const DirectionalLight = create_ssr_component(($$result, $$props, $$bindings, sl
   }
   return ``;
 });
-var index_svelte_svelte_type_style_lang = /* @__PURE__ */ (() => ".gallery.svelte-1mxod5q{width:99%;height:85%;position:absolute}")();
+var index_svelte_svelte_type_style_lang = /* @__PURE__ */ (() => '.svelte-10k0d3z.svelte-10k0d3z{font-size:14px;line-height:1.42857143;color:#333333;font-family:"IBMPlexSans", "Helvetica Neue", Helvetica, sans-serif}button.svelte-10k0d3z.svelte-10k0d3z{background-color:#666;height:3em;color:#fff;border:none;transition-duration:0.3s}button.svelte-10k0d3z.svelte-10k0d3z:hover{background-color:rgba(0, 0, 0, 0.8);box-shadow:1px 1px 0.9em rgba(0, 0, 0, 0.4)}.camera-button.svelte-10k0d3z.svelte-10k0d3z{position:absolute;left:0;bottom:0;padding:1em;z-index:100}.gallery.svelte-10k0d3z.svelte-10k0d3z{width:100vw;height:100vh;position:absolute;top:0;left:0;z-index:50}.upload-form-container.svelte-10k0d3z.svelte-10k0d3z{position:absolute;z-index:90;top:0;width:100vw;display:flex;align-items:center;justify-content:center}.upload-form-container.svelte-10k0d3z .upload-form.svelte-10k0d3z{padding:1em;text-align:center}')();
 const css = {
-  code: ".gallery.svelte-1mxod5q{width:99%;height:85%;position:absolute}",
+  code: '.svelte-10k0d3z.svelte-10k0d3z{font-size:14px;line-height:1.42857143;color:#333333;font-family:"IBMPlexSans", "Helvetica Neue", Helvetica, sans-serif}button.svelte-10k0d3z.svelte-10k0d3z{background-color:#666;height:3em;color:#fff;border:none;transition-duration:0.3s}button.svelte-10k0d3z.svelte-10k0d3z:hover{background-color:rgba(0, 0, 0, 0.8);box-shadow:1px 1px 0.9em rgba(0, 0, 0, 0.4)}.camera-button.svelte-10k0d3z.svelte-10k0d3z{position:absolute;left:0;bottom:0;padding:1em;z-index:100}.gallery.svelte-10k0d3z.svelte-10k0d3z{width:100vw;height:100vh;position:absolute;top:0;left:0;z-index:50}.upload-form-container.svelte-10k0d3z.svelte-10k0d3z{position:absolute;z-index:90;top:0;width:100vw;display:flex;align-items:center;justify-content:center}.upload-form-container.svelte-10k0d3z .upload-form.svelte-10k0d3z{padding:1em;text-align:center}',
   map: null
 };
 const basicDepth = 1;
@@ -611,15 +612,14 @@ const Routes = create_ssr_component(($$result, $$props, $$bindings, slots) => {
     return imageMaterials;
   };
   $$result.css.add(css);
-  return `<form>
-	<label for="${"source-file"}">Upload a JSON source for the images:</label>
-	<input accept="${"application/JSON"}" id="${"source-file"}" name="${"source-file"}" type="${"file"}">
-	<button type="${"submit"}">Use this file</button></form>
+  return `<div class="${"upload-form-container svelte-10k0d3z"}"><form class="${"upload-form svelte-10k0d3z"}">
+		<p class="${"svelte-10k0d3z"}"><label for="${"source-file"}" class="${"svelte-10k0d3z"}"><b class="${"svelte-10k0d3z"}">Upload a JSON source file to display the images:</b></label></p>
+		<input accept="${"application/JSON"}" id="${"source-file"}" name="${"source-file"}" type="${"file"}" class="${"svelte-10k0d3z"}">
+		<button type="${"submit"}" class="${"svelte-10k0d3z"}">Use this file</button></form></div>
 
-<h1>Gallery:</h1>
-<div><button type="${"button"}">Reset Camera to Start</button></div>
+<div class="${"camera-button svelte-10k0d3z"}"><button type="${"button"}" class="${"svelte-10k0d3z"}">Reset Camera to Start</button></div>
 
-<div class="${"gallery svelte-1mxod5q"}">${validate_component(Canvas, "SC.Canvas").$$render($$result, {
+<div class="${"gallery svelte-10k0d3z"}">${validate_component(Canvas, "SC.Canvas").$$render($$result, {
     antialias: true,
     background: new Color(180, 180, 180),
     shadows: true
@@ -714,7 +714,8 @@ const Routes = create_ssr_component(($$result, $$props, $$bindings, slots) => {
         })}` : ``}`;
       })}`;
     }
-  })}
-</div>`;
+  })}</div>
+
+${validate_component(Legend, "Legend").$$render($$result, {}, {}, {})}`;
 });
 export { Routes as default };

@@ -64,13 +64,14 @@
     "isEntry": true,
     "imports": [
       "_index-23786d4b.js",
+      "src/routes/image-filters.ts",
       "src/routes/file-actions.ts",
+      "src/routes/legend.svelte",
       "src/routes/scene-creation.ts",
-      "src/routes/stores.ts",
-      "src/routes/image-filters.ts"
+      "src/routes/stores.ts"
     ],
     "css": [
-      "assets/entries/pages/index.svelte-0faaa50a.css"
+      "assets/entries/pages/index.svelte-10936663.css"
     ]
   },
   "src/routes/legend.svelte": {
@@ -79,6 +80,9 @@
     "isEntry": true,
     "imports": [
       "_index-23786d4b.js"
+    ],
+    "css": [
+      "assets/entries/pages/legend.svelte-881247d5.css"
     ]
   },
   "_index-23786d4b.js": {
