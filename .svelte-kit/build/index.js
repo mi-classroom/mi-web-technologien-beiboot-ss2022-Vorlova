@@ -46,7 +46,7 @@ export class Server {
 			manifest,
 			method_override: {"parameter":"_method","allowed":[]},
 			paths: { base, assets },
-			prefix: assets + '/_app/immutable/',
+			prefix: assets + './app/immutable/',
 			prerender: {
 				default: true,
 				enabled: true

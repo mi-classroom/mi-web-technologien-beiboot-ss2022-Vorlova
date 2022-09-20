@@ -33,11 +33,11 @@ const heightSpacer = 20;
 const depthSpacer = 300;
 
 // Materials
-export const lineMaterial = new LineBasicMaterial( { color: 0x222222 } );
-export const groundMaterial = new MeshStandardMaterial({ color: 0xb4b4b4 });
+export const lineMaterial = new LineBasicMaterial( { color: 0x333333 } );
+export const groundMaterial = new MeshStandardMaterial({ color: 0xf2f2f2 });
 
 // Geometries
-export const groundGeometry = new BoxGeometry( 5000, 0, 2048);
+export const groundGeometry = new BoxGeometry( 11000, 0, 2048);
 export const imageGeometry = new BoxGeometry( imageBaseWidth, imageBaseHeight, basicDepth);
 export const textPlaneGeometry = new BoxGeometry( textPlaneBaseWidth, textPlaneBaseHeight, basicDepth);
 

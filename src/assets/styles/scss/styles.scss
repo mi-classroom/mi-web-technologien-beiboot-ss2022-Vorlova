@@ -1,6 +1,51 @@
-// Gallery
-.gallery {
-    width: 99%;
-    height: 85%;
+* {
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #333333;
+    font-family: "IBMPlexSans", "Helvetica Neue", Helvetica, sans-serif;
+}
+
+button {
+    background-color: #666;
+    height: 3em;
+    color: #fff;
+    border: none;
+    transition-duration: 0.3s;
+
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.8);
+        box-shadow: 1px 1px 0.9em rgba(0, 0, 0, 0.4);
+    }
+}
+
+.camera-button {
     position: absolute;
+    left: 0;
+    bottom: 0;
+    padding: 1em;
+    z-index: 100;
+}
+
+.gallery {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 50;
+}
+
+.upload-form-container {
+    position: absolute;
+    z-index: 90;
+    top: 0;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .upload-form {
+        padding: 1em;
+        text-align: center;
+    }
 }

@@ -6140,9 +6140,9 @@ let yearPosition;
 const basicDepth = 1;
 const heightSpacer = 20;
 const depthSpacer = 300;
-const lineMaterial = new LineBasicMaterial({ color: 2236962 });
-const groundMaterial = new MeshStandardMaterial({ color: 11842740 });
-const groundGeometry = new BoxGeometry(5e3, 0, 2048);
+const lineMaterial = new LineBasicMaterial({ color: 3355443 });
+const groundMaterial = new MeshStandardMaterial({ color: 15921906 });
+const groundGeometry = new BoxGeometry(11e3, 0, 2048);
 const imageGeometry = new BoxGeometry(imageBaseWidth, imageBaseHeight, basicDepth);
 const textPlaneGeometry = new BoxGeometry(textPlaneBaseWidth, textPlaneBaseHeight, basicDepth);
 const generateAllText = (image) => {
