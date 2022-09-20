@@ -1,48 +1,66 @@
 {
   ".svelte-kit/runtime/client/start.js": {
-    "file": "start-810ccfd1.js",
+    "file": "start-2e48f50e.js",
     "src": ".svelte-kit/runtime/client/start.js",
     "isEntry": true,
     "imports": [
-      "_index-e55fc2fc.js"
+      "_index-8b93d9e8.js",
+      "_index-aae7e910.js"
     ],
     "dynamicImports": [
       ".svelte-kit/runtime/components/layout.svelte",
       ".svelte-kit/runtime/components/error.svelte",
-      "src/routes/index.svelte"
+      "src/routes/index.svelte",
+      "src/routes/legend.svelte"
     ]
   },
   ".svelte-kit/runtime/components/layout.svelte": {
-    "file": "layout.svelte-faa45e12.js",
+    "file": "layout.svelte-afc5da85.js",
     "src": ".svelte-kit/runtime/components/layout.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
-      "_index-e55fc2fc.js"
+      "_index-8b93d9e8.js"
     ]
   },
   ".svelte-kit/runtime/components/error.svelte": {
-    "file": "error.svelte-28320db4.js",
+    "file": "error.svelte-1d34eb05.js",
     "src": ".svelte-kit/runtime/components/error.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
-      "_index-e55fc2fc.js"
+      "_index-8b93d9e8.js"
     ]
   },
   "src/routes/index.svelte": {
-    "file": "pages/index.svelte-7f7dd8e8.js",
+    "file": "pages/index.svelte-f6260d39.js",
     "src": "src/routes/index.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
-      "_index-e55fc2fc.js"
+      "_index-8b93d9e8.js",
+      "_index-aae7e910.js"
     ],
     "css": [
       "assets/pages/index.svelte-9817112f.css"
     ]
   },
-  "_index-e55fc2fc.js": {
-    "file": "chunks/index-e55fc2fc.js"
+  "src/routes/legend.svelte": {
+    "file": "pages/legend.svelte-c0435ad7.js",
+    "src": "src/routes/legend.svelte",
+    "isEntry": true,
+    "isDynamicEntry": true,
+    "imports": [
+      "_index-8b93d9e8.js"
+    ]
+  },
+  "_index-8b93d9e8.js": {
+    "file": "chunks/index-8b93d9e8.js"
+  },
+  "_index-aae7e910.js": {
+    "file": "chunks/index-aae7e910.js",
+    "imports": [
+      "_index-8b93d9e8.js"
+    ]
   }
 }

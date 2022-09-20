@@ -4,23 +4,50 @@
     "src": ".svelte-kit/build/index.js",
     "isEntry": true,
     "imports": [
-      "_index-c9d940db.js"
+      "_index-23786d4b.js"
     ],
     "dynamicImports": [
       ".svelte-kit/build/hooks.js"
     ]
   },
+  "src/routes/stores.ts": {
+    "file": "entries/endpoints/stores.ts.js",
+    "src": "src/routes/stores.ts",
+    "isEntry": true,
+    "imports": [
+      "_index-23786d4b.js"
+    ]
+  },
+  "src/routes/scene-creation.ts": {
+    "file": "entries/endpoints/scene-creation.ts.js",
+    "src": "src/routes/scene-creation.ts",
+    "isEntry": true,
+    "imports": [
+      "src/routes/stores.ts",
+      "_index-23786d4b.js"
+    ]
+  },
+  "src/routes/image-filters.ts": {
+    "file": "entries/endpoints/image-filters.ts.js",
+    "src": "src/routes/image-filters.ts",
+    "isEntry": true
+  },
   "src/routes/file-actions.ts": {
     "file": "entries/endpoints/file-actions.ts.js",
     "src": "src/routes/file-actions.ts",
-    "isEntry": true
+    "isEntry": true,
+    "imports": [
+      "src/routes/scene-creation.ts",
+      "src/routes/stores.ts",
+      "_index-23786d4b.js"
+    ]
   },
   ".svelte-kit/runtime/components/layout.svelte": {
     "file": "entries/fallbacks/layout.svelte.js",
     "src": ".svelte-kit/runtime/components/layout.svelte",
     "isEntry": true,
     "imports": [
-      "_index-c9d940db.js"
+      "_index-23786d4b.js"
     ]
   },
   ".svelte-kit/runtime/components/error.svelte": {
@@ -28,7 +55,7 @@
     "src": ".svelte-kit/runtime/components/error.svelte",
     "isEntry": true,
     "imports": [
-      "_index-c9d940db.js"
+      "_index-23786d4b.js"
     ]
   },
   "src/routes/index.svelte": {
@@ -36,14 +63,26 @@
     "src": "src/routes/index.svelte",
     "isEntry": true,
     "imports": [
-      "_index-c9d940db.js"
+      "_index-23786d4b.js",
+      "src/routes/file-actions.ts",
+      "src/routes/scene-creation.ts",
+      "src/routes/stores.ts",
+      "src/routes/image-filters.ts"
     ],
     "css": [
       "assets/entries/pages/index.svelte-0faaa50a.css"
     ]
   },
-  "_index-c9d940db.js": {
-    "file": "chunks/index-c9d940db.js"
+  "src/routes/legend.svelte": {
+    "file": "entries/pages/legend.svelte.js",
+    "src": "src/routes/legend.svelte",
+    "isEntry": true,
+    "imports": [
+      "_index-23786d4b.js"
+    ]
+  },
+  "_index-23786d4b.js": {
+    "file": "chunks/index-23786d4b.js"
   },
   ".svelte-kit/build/hooks.js": {
     "file": "chunks/hooks-1c45ba0b.js",

@@ -1,3 +1,5 @@
+function noop() {
+}
 function run(fn) {
   return fn();
 }
@@ -6,6 +8,9 @@ function blank_object() {
 }
 function run_all(fns) {
   fns.forEach(run);
+}
+function safe_not_equal(a, b) {
+  return a != a ? b == b : a !== b || (a && typeof a === "object" || typeof a === "function");
 }
 function custom_event(type, detail, { bubbles = false, cancelable = false } = {}) {
   const e = document.createEvent("CustomEvent");
@@ -118,4 +123,4 @@ function add_attribute(name, value, boolean) {
   const assignment = boolean && value === true ? "" : `="${escape_attribute_value(value.toString())}"`;
   return ` ${name}${assignment}`;
 }
-export { add_attribute as a, createEventDispatcher as b, create_ssr_component as c, each as d, escape as e, getContext as g, missing_component as m, onDestroy as o, setContext as s, validate_component as v };
+export { safe_not_equal as a, add_attribute as b, create_ssr_component as c, createEventDispatcher as d, escape as e, each as f, getContext as g, missing_component as m, noop as n, onDestroy as o, setContext as s, validate_component as v };
