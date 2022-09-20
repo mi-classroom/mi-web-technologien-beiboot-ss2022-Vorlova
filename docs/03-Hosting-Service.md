@@ -14,7 +14,7 @@ There are several options for hosting an app online, some of which are:
 
 * Setting up a server on ADV Lab (service provided by the TH Köln)
 
-* a Cloud solution like Google Cloud
+* A Cloud solution like Google Cloud
 
 ## Decision
 
@@ -38,4 +38,4 @@ However, this risk is manageable since the image data, which would primarily be 
 
     * `.htaccess` not usable
 
-    * need for different build process
+    * Need for different build process

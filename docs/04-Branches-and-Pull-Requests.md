@@ -26,8 +26,8 @@ Ideally, *Clean Code* guidelines will be adopted to ensure an understandable cod
 
 ### Pros:
 
-* clean code and repository
+* Clean code and repository
 
 ### Cons:
 
-* delay of code merges into main depending on availability of reviewer
+* Delay of code merges into main depending on availability of reviewer
